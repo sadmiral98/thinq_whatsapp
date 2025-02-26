@@ -41,10 +41,13 @@ def custom_api_request(self, request_type, url, auth_type="", params=False, head
 
     try:
         res = requests.request(request_type, call_url, params=params, headers=headers, data=data, files=files, timeout=10)
+        _logger.info("RESPONSE WHATSAPP API >>> %s", res.json())
     except requests.exceptions.RequestException:
+        _logger.info("RESPONSE WHATSAPP API ERR >>> %s", res)
         raise WhatsAppError(failure_type='network')
 
     # raise if json-parseable and 'error' in json
+    _logger.info("RESPONSE WHATSAPP API 2 >>> %s", res.json())
     try:
         if 'error' in res.json():
             raise WhatsAppError(*self.custom_prepare_error_response(res.json()))
@@ -310,9 +313,9 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
                 message_type: send_vals
             })
 
-        _logger.info("data ==>  %s ", data)
         
     json_data = json.dumps(data)
+    _logger.info("jsondata ==>  %s ", json_data)
     _logger.info("Send %s message from account %s [%s]", message_type, self.wa_account_id.name, self.wa_account_id.id)
     response = self.custom_api_request(
         "POST",
@@ -322,7 +325,6 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
         data=json_data
     )
     response_json = response.json()
-    _logger.info("RESPONSE WHATSAPP API >>> %s", response_json)
     if response_json.get('messages'):
         msg_uid = response_json['messages'][0]['id']
         return msg_uid
