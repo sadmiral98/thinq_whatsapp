@@ -172,7 +172,8 @@ def custom_prepare_error_response(self, response):
 def custom_process_button(self, data, send_vals, reply_data):
     # R: Cutting Text to fit maximum chars allowed
     actions = reply_data.get('action')
-    body = reply_data.get('message')
+    header = reply_data.get('header','')
+    body = reply_data.get('message','')
     buttons = []
     for act in actions:
         buttons.append({
@@ -259,6 +260,11 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
         #     # Image reply chat
         #     # data = self.custom_process_image(data, send_vals)
         
+            else: # R; if no records to button, set it as regular text reply
+                data.update({
+                    'type': message_type,
+                    message_type: send_vals
+                })
         else: # R; if no records to button, set it as regular text reply
             data.update({
                 'type': message_type,

@@ -45,6 +45,7 @@ class Channel(models.Model):
         
         reply_data = {
             'type':'text',
+            'header': '',
             'message': '',
             'action':''
         }
@@ -52,6 +53,7 @@ class Channel(models.Model):
             reply_message = '''Thank you for contacting ELSA (EJIP Layanan Sistem Automatic). How may I assist you? For service in English, press English button.'
             '''
             reply_data['type'] = 'button'
+            reply_data['header'] = 'Select Language'
             reply_data['message'] = reply_message
             reply_data['action'] = ['Indonesia','English']
         else:
@@ -69,6 +71,7 @@ class Channel(models.Model):
         reply_message = 'Something wrong'
         reply_data = {
             'type':'text',
+            'header': '',
             'message': '',
             'action':''
         }
