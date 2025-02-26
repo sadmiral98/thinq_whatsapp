@@ -3,6 +3,7 @@ from odoo import _, api, fields, models
 from markupsafe import Markup
 from datetime import datetime, timedelta
 import json
+from bs4 import BeautifulSoup
 
 import logging
 # _logger = logging.getLogger('ejip.tech-lab.space')
@@ -31,15 +32,18 @@ class Channel(models.Model):
 
             if session.chat_state != 'assigned_to_agent':
                 msg_type = msg_vals.get('message_type',False)
-                self.process_whatsapp_message(message, msg_vals, admin_user, session)
-                # if msg_type == 'whatsapp_message':
-                #     self.process_whatsapp_message(message, msg_vals, admin_user)
+                # self.process_whatsapp_message(message, msg_vals, admin_user, session)
+                if msg_type == 'whatsapp_message':
+                    self.process_whatsapp_message(message, msg_vals, admin_user)
         return res
     
     def process_whatsapp_message(self, message, msg_vals, admin_user, session):
         message_text = str(msg_vals['body'])
+        message_text = BeautifulSoup(message_text, "html.parser").get_text() #clean html elements if exist
+
         msg_type = msg_vals.get('message_type',False)
         _logger.warning("MESSAGE RECEIVED ==> : %s", message_text)
+
         if message_text.lower().startswith('hello') and session.chat_state in ('greeting') :
             reply_message = '''Thank you for contacting ELSA (EJIP Layanan Sistem Automatic). How may I assist you? For service in English, press English button.'
             '''
