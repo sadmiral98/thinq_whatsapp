@@ -116,61 +116,98 @@ def custom_prepare_error_response(self, response):
 #     })
 #     return data
 
-# def custom_process_list(self, data, send_vals, discuss_data):
-#     # R: Cutting Text to fit maximum chars allowed
-#     action = discuss_data.get('discuss_action')
-#     sections = action.get('sections')
-#     button_text = action.get('button')
-#     button_text = button_text[:20] #R: Maximum Chars for title only 20
-    
-#     for section in sections:
-#         if section.get('title'):
-#             section['title'] = section['title'][:24] #R: Maximum Chars for title only 24
-#         for row in section.get('rows'):
-#             if row.get('title'):
-#                 row['title'] = row['title'][:24] #R: Maximum Chars for title only 24
-#             if row.get('description'):
-#                 row['description'] = row['description'][:72] #R: Maximum Chars for title only 72
-        
-#     data.update({
-#         'type': 'interactive',
-#         'interactive': {
-#             'type': 'list',
-#             'header': {
-#                 'type':'text',
-#                 'text': discuss_data.get('discuss_header')
-#             },
-#             'body': {
-#                 'text': discuss_data.get('discuss_message')
-#             },
-#             'footer': {
-#                 'text': 'Select 1 item'
-#             },
-#             'action': {
-#                 'sections': sections,
-#                 'button': button_text,
-#                 # 'sections': [
-#                 #     {
-#                 #     'title': '<SECTION_TITLE_TEXT>',
-#                 #     'rows': [
-#                 #         {
-#                 #         'id': '<ROW_ID>',
-#                 #         'title': '<ROW_TITLE_TEXT>',
-#                 #         'description': '<ROW_DESCRIPTION_TEXT>'
-#                 #         }
-#                 #         /* Additional rows would go here*/
-#                 #     ]
-#                 #     }
-#                 #     /* Additional sections would go here */
-#                 # ],
-#                 # 'button': '<BUTTON_TEXT>',
-#             }
-#         }
-#     })
-#     return data
+def custom_process_flow(self, data, send_vals, reply_data):
+    data.update({
+        'type': 'interactive',
+        'interactive': {
+            'type': 'flow',
+            'header': {
+                'type': 'text',
+                'text': 'Flow message header'
+            },
+            'body': {
+                'text': 'Flow message body'
+            },
+            'footer': {
+                'text': 'Flow message footer'
+            },
+            'action': {
+                'name': 'flow',
+                'parameters': {
+                    'flow_message_version': '3',
+                    'flow_token': 'AQAAAAACS5FpgQ_cAAAAAD0QI3s.',
+                    'flow_id': '1',
+                    'flow_cta': 'Book!',
+                    'flow_action': 'navigate',
+                    'flow_action_payload': {
+                        'screen': '<SCREEN_NAME>',
+                        'data': { 
+                            'product_name': 'name',
+                            'product_description': 'description',
+                            'product_price': 100
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+def custom_process_list(self, data, send_vals, reply_data):
+    actions = reply_data.get('action')
+    header = reply_data.get('header','')
+    body = reply_data.get('message','')
+    sections = [{
+            'title': header,
+        }]
+    section_rows = []
+    for act in actions:
+        section_rows.append(
+            {
+                'id': act.get('id'),
+                'title': act.get('description'),
+                'description': ''
+            }
+        )
+    sections[0]['rows'] = section_rows
+
+    data.update({
+        'type': 'interactive',
+        'interactive': {
+            'type': 'list',
+            'header': {
+                'type':'text',
+                'text': header
+            },
+            'body': {
+                'text': body
+            },
+            'footer': {
+                'text': 'Select 1 item'
+            },
+            'action': {
+                'sections': sections,
+                'button': 'button text~',
+                # 'sections': [
+                #     {
+                #     'title': '<SECTION_TITLE_TEXT>',
+                #     'rows': [
+                #         {
+                #         'id': '<ROW_ID>',
+                #         'title': '<ROW_TITLE_TEXT>',
+                #         'description': '<ROW_DESCRIPTION_TEXT>'
+                #         }
+                #         /* Additional rows would go here*/
+                #     ]
+                #     }
+                #     /* Additional sections would go here */
+                # ],
+                # 'button': '<BUTTON_TEXT>',
+            }
+        }
+    })
+    return data
 
 def custom_process_button(self, data, send_vals, reply_data):
-    # R: Cutting Text to fit maximum chars allowed
     actions = reply_data.get('action')
     header = reply_data.get('header','')
     body = reply_data.get('message','')
@@ -190,7 +227,7 @@ def custom_process_button(self, data, send_vals, reply_data):
             'type': 'button',
             'header': {
                 'type':'text',
-                'text': ''
+                'text': header
             },
             'body': {
                 'text': body
@@ -249,9 +286,11 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
             if reply_data.get('type') == 'button':
                 data = self.custom_process_button(data, send_vals, reply_data)
 
-        #     elif discuss_data.get('discuss_type') == 'list':
-        #         # List reply chat
-        #         data = self.custom_process_list(data, send_vals, discuss_data)
+            elif reply_data.get('type') == 'list':
+                data = self.custom_process_list(data, send_vals, reply_data)
+
+            elif reply_data.get('type') == 'flow':
+                data = self.custom_process_flow(data, send_vals, reply_data)
 
         #     elif discuss_data.get('discuss_type') == 'document':
         #         # document reply chat
@@ -293,7 +332,8 @@ WhatsAppApi.custom_prepare_error_response = custom_prepare_error_response
 # WhatsAppApi.get_media_id = get_media_id
 # WhatsAppApi.custom_process_image = custom_process_image
 # WhatsAppApi.custom_process_document = custom_process_document
-# WhatsAppApi.custom_process_list = custom_process_list
+WhatsAppApi.custom_process_flow = custom_process_flow
+WhatsAppApi.custom_process_list = custom_process_list
 WhatsAppApi.custom_process_button = custom_process_button
 WhatsAppApi._send_whatsapp = custom_send_whatsapp
 # class WebController(Webhook):

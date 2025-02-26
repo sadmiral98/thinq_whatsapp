@@ -77,29 +77,44 @@ class Channel(models.Model):
         }
         if session.chat_state == 'greeting':
             if 'indonesia' in message_text.lower():
+                reply_data['type'] = 'list'
+                reply_data['header'] = "Pilih Layanan"
+                reply_data['action'] = [
+                    {'id':1,'description':'Submit tiket (laporan/pengaduan)'},
+                    {'id':2,'description':'Lihat status tiket'},
+                    {'id':3,'description':'Terhubung dengan agent'}
+                ]
                 session.lang = 'indo'
                 session.chat_state = 'service'
-                reply_message = '''
-                    Silahkan Pilih Layanan : <br> \n
-                    Ketik *1* : Submit tiket (laporan/pengaduan) <br> \n
-                    Ketik *2* : Lihat status tiket <br> \n
-                    Ketik *3* : Terhubung dengan agent
-                '''
+                reply_message = "Silahkan pilih 1 dari layanan yang tersedia"
+                # reply_message = '''
+                #     Silahkan Pilih Layanan : <br> \n
+                #     Ketik *1* : Submit tiket (laporan/pengaduan) <br> \n
+                #     Ketik *2* : Lihat status tiket <br> \n
+                #     Ketik *3* : Terhubung dengan agent
+                # '''
             elif 'english' in message_text.lower():
+                reply_data['type'] = 'list'
+                reply_data['header'] = "Select Services"
+                reply_data['action'] = [
+                    {'id':1,'description':'Submit ticket (report/complain)'},
+                    {'id':2,'description':'Ticket status'},
+                    {'id':3,'description':'Connect with agent'}
+                ]
                 session.lang = 'english'    
                 session.chat_state = 'service'
-                reply_message = '''
-                    Please select type of service :  <br> \n
-                    Type *1* : Submit ticket (report/complain) <br> \n
-                    Type *2* : Ticket status <br> \n
-                    Type *3* : Connect with agent
-                '''
+                reply_message = "Please select 1 from available services"
+                # reply_message = '''
+                #     Please select type of service :  <br> \n
+                #     Type *1* : Submit ticket (report/complain) <br> \n
+                #     Type *2* : Ticket status <br> \n
+                #     Type *3* : Connect with agent
+                # '''
             else:
+                reply_data['type'] = 'text'
                 reply_message = "I'm sorry i don't understand, try start the message with 'hello !'"
             
-            reply_data['type'] = 'text'
             reply_data['message'] = reply_message
-            # reply_data['action'] = ['Indonesia','English']
 
         elif session.chat_state == 'service':
             if message_text in ('1','2','3'):
@@ -113,34 +128,56 @@ class Channel(models.Model):
 
             if message_text == "1":
                 if session.lang == 'indo':
-                    reply_message = f'''
-                        Apa yang bisa kami bantu -{message.author_id.name}- ?  <br> \n
-                        Ketik *1* : Maintenance & Infrastruktur <br> \n
-                        Ketik *2* : Keamanan, Damkar & Lalu lintas <br> \n
-                        Ketik *3* : Air & Limbah, RKL-RPL Rinci/Rintek  <br> \n
-                        Ketik *4* : Laboratorium EJIP, Analisa, LHU <br> \n
-                        Ketik *5* : Administrasi, Perizinan & Training <br> \n
-                        Ketik *6* : Rental Factory/Office & Conference Room  <br> \n
-                        Ketik *0* : Kembali ke menu utama <br> \n
+                    reply_data['type'] = 'list'
+                    reply_data['header'] = "Pilih Jenis Layanan"
+                    reply_data['action'] = [
+                        {'id':1,'description':'Maintenance & Infrastruktur'},
+                        {'id':2,'description':'Keamanan, Damkar & Lalu lintas'},
+                        {'id':3,'description':'Air & Limbah, RKL-RPL Rinci/Rintek'},
+                        {'id':4,'description':'Laboratorium EJIP, Analisa, LHU'},
+                        {'id':5,'description':'Administrasi, Perizinan & Training'},
+                        {'id':6,'description':'Rental Factory/Office & Conference Room'},
+                        {'id':0,'description':'Kembali ke menu utama'}
+                    ]
+                    reply_message = f"Apa yang bisa kami bantu -{message.author_id.name}- ? "
+                    # reply_message = f'''
+                    #     Apa yang bisa kami bantu -{message.author_id.name}- ?  <br> \n
+                    #     Ketik *1* : Maintenance & Infrastruktur <br> \n
+                    #     Ketik *2* : Keamanan, Damkar & Lalu lintas <br> \n
+                    #     Ketik *3* : Air & Limbah, RKL-RPL Rinci/Rintek  <br> \n
+                    #     Ketik *4* : Laboratorium EJIP, Analisa, LHU <br> \n
+                    #     Ketik *5* : Administrasi, Perizinan & Training <br> \n
+                    #     Ketik *6* : Rental Factory/Office & Conference Room  <br> \n
+                    #     Ketik *0* : Kembali ke menu utama <br> \n
 
-                        Mohon maaf, jika dalam waktu 30 menit tidak ada respon yang kami terima, maka percakapan ini akan kami hentikan.
-                    '''
+                    #     Mohon maaf, jika dalam waktu 30 menit tidak ada respon yang kami terima, maka percakapan ini akan kami hentikan.
+                    # '''
                 else:
-                    reply_message = f'''
-                        How may I assist you? -{message.author_id.name}- ?  <br> \n
-                        Type *1* : Maintenance & Infrastructure <br> \n
-                        Type *2* : Safety, Fire Fighting & Traffic <br> \n
-                        Type *3* : Enviro. Management License, Waste & Industrial Water <br> \n
-                        Type *4* : EJIP Laboratory, Analysis, Testing Report <br> \n
-                        Type *5* : Administration, Approval & Training <br> \n
-                        Type *6* : Rental Factory/Office & Conference Room <br> \n
-                        Type *0* : Back to main menu <br> \n
+                    reply_data['type'] = 'list'
+                    reply_data['header'] = "Pilih Jenis Layanan"
+                    reply_data['action'] = [
+                        {'id':1,'description':'Maintenance & Infrastructure'},
+                        {'id':2,'description':'Safety, Fire Fighting & Traffic'},
+                        {'id':3,'description':'Enviro. Management License, Waste & Industrial Water'},
+                        {'id':4,'description':'EJIP Laboratory, Analysis, Testing Report'},
+                        {'id':5,'description':'Administration, Approval & Training'},
+                        {'id':6,'description':'Rental Factory/Office & Conference Room'},
+                        {'id':0,'description':'Back to main menu'},
+                    ]
+                    reply_message = f"How may I assist you -{message.author_id.name}- ? "
+                    # reply_message = f'''
+                    #     How may I assist you? -{message.author_id.name}- ?  <br> \n
+                    #     Type *1* : Maintenance & Infrastructure <br> \n
+                    #     Type *2* : Safety, Fire Fighting & Traffic <br> \n
+                    #     Type *3* : Enviro. Management License, Waste & Industrial Water <br> \n
+                    #     Type *4* : EJIP Laboratory, Analysis, Testing Report <br> \n
+                    #     Type *5* : Administration, Approval & Training <br> \n
+                    #     Type *6* : Rental Factory/Office & Conference Room <br> \n
+                    #     Type *0* : Back to main menu <br> \n
 
-                        If we receive no response within 30 minutes, this conversation will be automatically closed.
-                    '''
-                reply_data['type'] = 'text'
+                    #     If we receive no response within 30 minutes, this conversation will be automatically closed.
+                    # '''
                 reply_data['message'] = reply_message
-                # reply_data['action'] = ['Indonesia','English']
                 session.chat_state = 'service_selected'
         elif session.chat_state == 'service_selected':
             if message_text in ('1','2','3','4','5','6','0'):
@@ -162,9 +199,8 @@ class Channel(models.Model):
                     reply_message = f'''
                         Please complete the following data:
                     '''
-                reply_data['type'] = 'text'
+                reply_data['type'] = 'flow'
                 reply_data['message'] = reply_message
-                # reply_data['action'] = ['Indonesia','English']
         elif session.chat_state == 'customer_response':
             def is_valid_json(input_str):
                 try:
