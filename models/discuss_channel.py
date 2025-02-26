@@ -39,7 +39,7 @@ class Channel(models.Model):
     def process_whatsapp_message(self, message, msg_vals, admin_user, session):
         message_text = str(msg_vals['body'])
         msg_type = msg_vals.get('message_type',False)
-        
+        _logger.warning("MESSAGE RECEIVED ==> : %s", message_text)
         if message_text.lower().startswith('hello') and session.chat_state in ('greeting') :
             reply_message = '''Thank you for contacting ELSA (EJIP Layanan Sistem Automatic). How may I assist you? For service in English, press English button.'
             '''
