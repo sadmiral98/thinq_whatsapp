@@ -43,7 +43,8 @@ This module aims to manage :
     'demo': [],
     'test': [],
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
+        'views/res_company.xml',
      ],
     'css': [],
     'js': [],

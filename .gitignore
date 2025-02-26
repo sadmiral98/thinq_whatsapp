@@ -1,0 +1,5 @@
+### VisualStudioCode ###
+.vscode/* 
+*.pyc
+__pycache__/
+*.py[cod]
