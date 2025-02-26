@@ -34,7 +34,7 @@ class Channel(models.Model):
                 msg_type = msg_vals.get('message_type',False)
                 # self.process_whatsapp_message(message, msg_vals, admin_user, session)
                 if msg_type == 'whatsapp_message':
-                    self.process_whatsapp_message(message, msg_vals, admin_user)
+                    self.process_whatsapp_message(message, msg_vals, admin_user, session)
         return res
     
     def process_whatsapp_message(self, message, msg_vals, admin_user, session):
