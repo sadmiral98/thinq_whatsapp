@@ -165,7 +165,7 @@ def custom_process_list(self, data, send_vals, reply_data):
             {
                 'id': act.get('id'),
                 'title': act.get('description'),
-                'description': ''
+                'description': act.get('description'),
             }
         )
     sections[0]['rows'] = section_rows
