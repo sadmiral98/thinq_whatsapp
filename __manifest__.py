@@ -30,7 +30,8 @@
     'support': 'thinqindonesia@gmail.com',
     'depends': [
         'base',
-        'mail'
+        'mail',
+        'whatsapp', 'account'
     ],
     'description': """    
 This module aims to manage :
