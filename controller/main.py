@@ -284,7 +284,6 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
             message_type: send_vals
         })
     if message_type == 'text':
-        _logger.info("message ==>  %s ", message_type)
         if reply_data:
             if reply_data.get('type') == 'button':
                 data = self.custom_process_button(data, send_vals, reply_data)
@@ -293,6 +292,7 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
                 data = self.custom_process_list(data, send_vals, reply_data)
 
             elif reply_data.get('type') == 'flow':
+                _logger.info("kena flow!, data before => %s ",data)
                 data = self.custom_process_flow(data, send_vals, reply_data)
 
         #     elif discuss_data.get('discuss_type') == 'document':
@@ -316,7 +316,7 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
         
     json_data = json.dumps(data)
     _logger.info("jsondata ==>  %s ", json_data)
-    _logger.info("Send %s message from account %s [%s]", message_type, self.wa_account_id.name, self.wa_account_id.id)
+    # _logger.info("Send %s message from account %s [%s]", message_type, self.wa_account_id.name, self.wa_account_id.id)
     response = self.custom_api_request(
         "POST",
         f"/{self.phone_uid}/messages",
