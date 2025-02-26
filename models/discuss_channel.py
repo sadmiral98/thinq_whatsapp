@@ -45,13 +45,15 @@ class Channel(models.Model):
         
         reply_data = {
             'type':'text',
-            'values': ''
+            'message': '',
+            'action':''
         }
         if message_text.lower().startswith('hello') and session.chat_state in ('greeting') :
-            reply_data['type'] = 'button'
-            reply_data['values'] = ['Indonesia','English']
             reply_message = '''Thank you for contacting ELSA (EJIP Layanan Sistem Automatic). How may I assist you? For service in English, press English button.'
             '''
+            reply_data['type'] = 'button'
+            reply_data['message'] = reply_message
+            reply_data['action'] = ['Indonesia','English']
         else:
             reply_message, reply_data = self.process_whatsapp_reply(message, msg_vals, message_text, admin_user, session)
 
@@ -67,29 +69,35 @@ class Channel(models.Model):
         reply_message = 'Something wrong'
         reply_data = {
             'type':'text',
-            'values':'',
+            'message': '',
+            'action':''
         }
         if session.chat_state == 'greeting':
             if 'indonesia' in message_text.lower():
                 session.lang = 'indo'
                 session.chat_state = 'service'
                 reply_message = '''
-                    Silahkan Pilih Layanan : <br>
-                    Ketik *1* : Submit tiket (laporan/pengaduan) <br>
-                    Ketik *2* : Lihat status tiket <br>
+                    Silahkan Pilih Layanan : <br> \n
+                    Ketik *1* : Submit tiket (laporan/pengaduan) <br> \n
+                    Ketik *2* : Lihat status tiket <br> \n
                     Ketik *3* : Terhubung dengan agent
                 '''
             elif 'english' in message_text.lower():
                 session.lang = 'english'    
                 session.chat_state = 'service'
                 reply_message = '''
-                    Please select type of service :  <br>
-                    Type *1* : Submit ticket (report/complain) <br>
-                    Type *2* : Ticket status <br>
+                    Please select type of service :  <br> \n
+                    Type *1* : Submit ticket (report/complain) <br> \n
+                    Type *2* : Ticket status <br> \n
                     Type *3* : Connect with agent
                 '''
             else:
                 reply_message = "I'm sorry i don't understand, try start the message with 'hello !'"
+            
+            reply_data['type'] = 'text'
+            reply_data['message'] = reply_message
+            # reply_data['action'] = ['Indonesia','English']
+
         elif session.chat_state == 'service':
             if message_text in ('1','2','3'):
                 selected_json = session.option_selected_json
@@ -103,30 +111,33 @@ class Channel(models.Model):
             if message_text == "1":
                 if session.lang == 'indo':
                     reply_message = f'''
-                        Apa yang bisa kami bantu -{message.author_id.name}- ?  <br>
-                        Ketik *1* : Maintenance & Infrastruktur <br>
-                        Ketik *2* : Keamanan, Damkar & Lalu lintas <br>
-                        Ketik *3* : Air & Limbah, RKL-RPL Rinci/Rintek  <br>
-                        Ketik *4* : Laboratorium EJIP, Analisa, LHU <br>
-                        Ketik *5* : Administrasi, Perizinan & Training <br>
-                        Ketik *6* : Rental Factory/Office & Conference Room  <br>
-                        Ketik *0* : Kembali ke menu utama <br>
+                        Apa yang bisa kami bantu -{message.author_id.name}- ?  <br> \n
+                        Ketik *1* : Maintenance & Infrastruktur <br> \n
+                        Ketik *2* : Keamanan, Damkar & Lalu lintas <br> \n
+                        Ketik *3* : Air & Limbah, RKL-RPL Rinci/Rintek  <br> \n
+                        Ketik *4* : Laboratorium EJIP, Analisa, LHU <br> \n
+                        Ketik *5* : Administrasi, Perizinan & Training <br> \n
+                        Ketik *6* : Rental Factory/Office & Conference Room  <br> \n
+                        Ketik *0* : Kembali ke menu utama <br> \n
 
                         Mohon maaf, jika dalam waktu 30 menit tidak ada respon yang kami terima, maka percakapan ini akan kami hentikan.
                     '''
                 else:
                     reply_message = f'''
-                        How may I assist you? -{message.author_id.name}- ?  <br>
-                        Type *1* : Maintenance & Infrastructure <br>
-                        Type *2* : Safety, Fire Fighting & Traffic <br>
-                        Type *3* : Enviro. Management License, Waste & Industrial Water <br>
-                        Type *4* : EJIP Laboratory, Analysis, Testing Report <br>
-                        Type *5* : Administration, Approval & Training <br>
-                        Type *6* : Rental Factory/Office & Conference Room <br>
-                        Type *0* : Back to main menu <br>
+                        How may I assist you? -{message.author_id.name}- ?  <br> \n
+                        Type *1* : Maintenance & Infrastructure <br> \n
+                        Type *2* : Safety, Fire Fighting & Traffic <br> \n
+                        Type *3* : Enviro. Management License, Waste & Industrial Water <br> \n
+                        Type *4* : EJIP Laboratory, Analysis, Testing Report <br> \n
+                        Type *5* : Administration, Approval & Training <br> \n
+                        Type *6* : Rental Factory/Office & Conference Room <br> \n
+                        Type *0* : Back to main menu <br> \n
 
                         If we receive no response within 30 minutes, this conversation will be automatically closed.
                     '''
+                reply_data['type'] = 'text'
+                reply_data['message'] = reply_message
+                # reply_data['action'] = ['Indonesia','English']
                 session.chat_state = 'service_selected'
         elif session.chat_state == 'service_selected':
             if message_text in ('1','2','3','4','5','6','0'):
@@ -148,6 +159,9 @@ class Channel(models.Model):
                     reply_message = f'''
                         Please complete the following data:
                     '''
+                reply_data['type'] = 'text'
+                reply_data['message'] = reply_message
+                # reply_data['action'] = ['Indonesia','English']
         elif session.chat_state == 'customer_response':
             def is_valid_json(input_str):
                 try:

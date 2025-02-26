@@ -171,15 +171,15 @@ def custom_prepare_error_response(self, response):
 
 def custom_process_button(self, data, send_vals, reply_data):
     # R: Cutting Text to fit maximum chars allowed
-    values = reply_data.get('values')
-    body = data.get('text').get('body')
+    actions = reply_data.get('action')
+    body = reply_data.get('message')
     buttons = []
-    for val in values:
+    for act in actions:
         buttons.append({
             'type': 'reply',
             'reply': {
-                'id': f'reply-{val}',
-                'title': val
+                'id': f'reply-{act}',
+                'title': act
             }
         })
 
