@@ -81,9 +81,9 @@ class Channel(models.Model):
                 reply_data['type'] = 'list'
                 reply_data['header'] = "Pilih Layanan"
                 reply_data['action'] = [
-                    {'id':1,'description':'Submit tiket (laporan/pengaduan)'},
-                    {'id':2,'description':'Lihat status tiket'},
-                    {'id':3,'description':'Terhubung dengan agent'}
+                    {'id':'1','description':'Submit tiket (laporan/pengaduan)'},
+                    {'id':'2','description':'Lihat status tiket'},
+                    {'id':'3','description':'Terhubung dengan agent'}
                 ]
                 session.lang = 'indo'
                 session.chat_state = 'service'
@@ -98,9 +98,9 @@ class Channel(models.Model):
                 reply_data['type'] = 'list'
                 reply_data['header'] = "Select Services"
                 reply_data['action'] = [
-                    {'id':1,'description':'Submit ticket (report/complain)'},
-                    {'id':2,'description':'Ticket status'},
-                    {'id':3,'description':'Connect with agent'}
+                    {'id':'1','description':'Submit ticket (report/complain)'},
+                    {'id':'2','description':'Ticket status'},
+                    {'id':'3','description':'Connect with agent'}
                 ]
                 session.lang = 'english'    
                 session.chat_state = 'service'
@@ -132,13 +132,13 @@ class Channel(models.Model):
                     reply_data['type'] = 'list'
                     reply_data['header'] = "Pilih Jenis Layanan"
                     reply_data['action'] = [
-                        {'id':1,'description':'Maintenance & Infrastruktur'},
-                        {'id':2,'description':'Keamanan, Damkar & Lalu lintas'},
-                        {'id':3,'description':'Air & Limbah, RKL-RPL Rinci/Rintek'},
-                        {'id':4,'description':'Laboratorium EJIP, Analisa, LHU'},
-                        {'id':5,'description':'Administrasi, Perizinan & Training'},
-                        {'id':6,'description':'Rental Factory/Office & Conference Room'},
-                        {'id':0,'description':'Kembali ke menu utama'}
+                        {'id':'1','description':'Maintenance & Infrastruktur'},
+                        {'id':'2','description':'Keamanan, Damkar & Lalu lintas'},
+                        {'id':'3','description':'Air & Limbah, RKL-RPL Rinci/Rintek'},
+                        {'id':'4','description':'Laboratorium EJIP, Analisa, LHU'},
+                        {'id':'5','description':'Administrasi, Perizinan & Training'},
+                        {'id':'6','description':'Rental Factory/Office & Conference Room'},
+                        {'id':'0','description':'Kembali ke menu utama'}
                     ]
                     reply_message = f"Apa yang bisa kami bantu -{message.author_id.name}- ? "
                     # reply_message = f'''
@@ -157,13 +157,13 @@ class Channel(models.Model):
                     reply_data['type'] = 'list'
                     reply_data['header'] = "Pilih Jenis Layanan"
                     reply_data['action'] = [
-                        {'id':1,'description':'Maintenance & Infrastructure'},
-                        {'id':2,'description':'Safety, Fire Fighting & Traffic'},
-                        {'id':3,'description':'Enviro. Management License, Waste & Industrial Water'},
-                        {'id':4,'description':'EJIP Laboratory, Analysis, Testing Report'},
-                        {'id':5,'description':'Administration, Approval & Training'},
-                        {'id':6,'description':'Rental Factory/Office & Conference Room'},
-                        {'id':0,'description':'Back to main menu'},
+                        {'id':'1','description':'Maintenance & Infrastructure'},
+                        {'id':'2','description':'Safety, Fire Fighting & Traffic'},
+                        {'id':'3','description':'Enviro. Management License, Waste & Industrial Water'},
+                        {'id':'4','description':'EJIP Laboratory, Analysis, Testing Report'},
+                        {'id':'5','description':'Administration, Approval & Training'},
+                        {'id':'6','description':'Rental Factory/Office & Conference Room'},
+                        {'id':'0','description':'Back to main menu'},
                     ]
                     reply_message = f"How may I assist you -{message.author_id.name}- ? "
                     # reply_message = f'''
