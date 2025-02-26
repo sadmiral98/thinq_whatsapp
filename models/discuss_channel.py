@@ -75,6 +75,7 @@ class Channel(models.Model):
             'message': '',
             'action':''
         }
+        _logger.info("MESSAGE_TEXT >>> %s", message_text)
         if session.chat_state == 'greeting':
             if 'indonesia' in message_text.lower():
                 reply_data['type'] = 'list'
@@ -124,7 +125,7 @@ class Channel(models.Model):
                 selected_json = json.dumps(selected_json_dict)
                 session.option_selected_json = selected_json
             else:
-                return "Your Input is invalid. Please select between 1 / 2 / 3"
+                return "Your Input is invalid. Please select between 1 / 2 / 3", reply_data
 
             if message_text == "1":
                 if session.lang == 'indo':
@@ -188,7 +189,7 @@ class Channel(models.Model):
                 session.option_selected_json = selected_json
                 session.chat_state = 'customer_response'
             else:
-                return "Your Input is invalid. Please select between 1 / 2 / 3 / 4 / 5 / 6 / 0"
+                return "Your Input is invalid. Please select between 1 / 2 / 3 / 4 / 5 / 6 / 0", reply_data
             
             if message_text == "1":
                 if session.lang == 'indo':
@@ -219,7 +220,7 @@ class Channel(models.Model):
                 session.option_selected_json = selected_json
                 session.chat_state = 'final_service'
             else:
-                return "Your Input is invalid. Please follow the instruction!"
+                return "Your Input is invalid. Please follow the instruction!", reply_data
             
         #     if message_text == "1":
 
