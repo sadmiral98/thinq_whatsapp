@@ -83,7 +83,7 @@ class Channel(models.Model):
                 reply_data['action'] = [
                     {'id':'submit','description':'Submit tiket (laporan/pengaduan)'},
                     {'id':'ticket','description':'Lihat status tiket'},
-                    {'id':'agent','description':'Terhubung dengan agent'}
+                    {'id':'agents','description':'Terhubung dengan agent'}
                 ]
                 session.lang = 'indo'
                 session.chat_state = 'service'
@@ -100,7 +100,7 @@ class Channel(models.Model):
                 reply_data['action'] = [
                     {'id':'submit','description':'Submit ticket (report/complain)'},
                     {'id':'ticket','description':'Ticket status'},
-                    {'id':'agent','description':'Connect with agent'}
+                    {'id':'agents','description':'Connect with agent'}
                 ]
                 session.lang = 'english'    
                 session.chat_state = 'service'
@@ -118,16 +118,14 @@ class Channel(models.Model):
             reply_data['message'] = reply_message
 
         elif session.chat_state == 'service':
-            if message_text in ('1','2','3'):
+            if message_text.lower().startswith(('submit', 'ticket', 'agents')):
                 selected_json = session.option_selected_json
                 selected_json_dict = json.loads(selected_json)
-                selected_json_dict['type_service'] = message_text
+                selected_json_dict['type_service'] = message_text[:6]
                 selected_json = json.dumps(selected_json_dict)
                 session.option_selected_json = selected_json
-            else:
-                return "Your Input is invalid. Please select between 1 / 2 / 3", reply_data
 
-            if message_text == "1":
+            if message_text.lower().startswith("submit"):
                 if session.lang == 'indo':
                     reply_data['type'] = 'list'
                     reply_data['header'] = "Pilih Jenis Layanan"
@@ -181,17 +179,14 @@ class Channel(models.Model):
                 reply_data['message'] = reply_message
                 session.chat_state = 'service_selected'
         elif session.chat_state == 'service_selected':
-            if message_text in ('1','2','3','4','5','6','0'):
+            if message_text.startswith(('1','2','3','4','5','6','0')):
                 selected_json = session.option_selected_json
                 selected_json_dict = json.loads(selected_json)
-                selected_json_dict['service_category'] = message_text
+                selected_json_dict['service_category'] = message_text[:1]
                 selected_json = json.dumps(selected_json_dict)
                 session.option_selected_json = selected_json
                 session.chat_state = 'customer_response'
-            else:
-                return "Your Input is invalid. Please select between 1 / 2 / 3 / 4 / 5 / 6 / 0", reply_data
-            
-            if message_text == "1":
+            if message_text.startswith("1"):
                 if session.lang == 'indo':
                     reply_message = f'''
                         Silahkan melengkapi data berikut ini :
