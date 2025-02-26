@@ -41,7 +41,6 @@ def custom_api_request(self, request_type, url, auth_type="", params=False, head
 
     try:
         res = requests.request(request_type, call_url, params=params, headers=headers, data=data, files=files, timeout=10)
-        _logger.info("RESPONSE WHATSAPP API >>> %s", res.json())
     except requests.exceptions.RequestException:
         _logger.info("RESPONSE WHATSAPP API ERR >>> %s", res)
         raise WhatsAppError(failure_type='network')
@@ -154,6 +153,8 @@ def custom_process_flow(self, data, send_vals, reply_data):
             }
         }
     })
+
+    return data
 
 def custom_process_list(self, data, send_vals, reply_data):
     actions = reply_data.get('action')
@@ -292,7 +293,6 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
                 data = self.custom_process_list(data, send_vals, reply_data)
 
             elif reply_data.get('type') == 'flow':
-                _logger.info("kena flow!, data before => %s ",data)
                 data = self.custom_process_flow(data, send_vals, reply_data)
 
         #     elif discuss_data.get('discuss_type') == 'document':
@@ -316,7 +316,7 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
         
     json_data = json.dumps(data)
     _logger.info("jsondata ==>  %s ", json_data)
-    # _logger.info("Send %s message from account %s [%s]", message_type, self.wa_account_id.name, self.wa_account_id.id)
+    _logger.info("Send %s message from account %s [%s]", message_type, self.wa_account_id.name, self.wa_account_id.id)
     response = self.custom_api_request(
         "POST",
         f"/{self.phone_uid}/messages",
@@ -339,40 +339,3 @@ WhatsAppApi.custom_process_flow = custom_process_flow
 WhatsAppApi.custom_process_list = custom_process_list
 WhatsAppApi.custom_process_button = custom_process_button
 WhatsAppApi._send_whatsapp = custom_send_whatsapp
-# class WebController(Webhook):
-#     @http.route()
-#     def webhookpost(self):
-#         data = json.loads(request.httprequest.data)
-        
-#         # _logger.info("\n\ndke.iziapp.id : Webhook Data: %s", json.dumps(data, indent=4))
-#         _logger.info("\n\ndke.iziapp.id : req :",request.env.company.id)
-#         _logger.info("\n\ndke.iziapp.id : req :",request.env.company.name)
-#         _logger.info("\n\ndke.iziapp.id : req :",request.env.company.ngrok_url)
-        
-#         if request.env.company.ngrok_url:
-#             _logger.info("\n\ndke.iziapp.id : POST : ngrok url found!")
-#             url = f"{request.env.company.ngrok_url}testwebhookpost"
-#             response = requests.post(url, json=data)
-#         else:
-#             _logger.info("\n\ndke.iziapp.id : POST : ngrok url NOT found!")
-#         super().webhookpost()
-    # @http.route('/whatsapp/webhook/', methods=['POST'], type="json", auth="public")
-    # def webhookpost(self):
-        
-
-    #     # Call the original method to ensure parent logic is executed
-    #     super(WebController, self).webhookpost()
-
-    
-    # @http.route('/whatsapp/webhook/', methods=['GET'], type="http", auth="public", csrf=False)
-    # def webhookget(self, **kwargs):
-    #     _logger.info("Received GET webhook request with data: %s", kwargs)
-
-    #     if request.env.company.ngrok_url:
-    #         _logger.info("\n\n GET : ngrok url found!")
-    #         url = request.env.company.ngrok_url
-    #         response = requests.get(url, params=kwargs)
-    #     else:
-    #         _logger.info("\n\n GET : ngrok url not found!")
-        
-    #     super(WebController, self).webhookget(**kwargs)

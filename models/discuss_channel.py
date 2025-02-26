@@ -49,22 +49,15 @@ class Channel(models.Model):
             'message': '',
             'action':''
         }
-        # if message_text.lower().startswith('hello') and session.chat_state in ('greeting') :
-        #     reply_message = '''Thank you for contacting ELSA (EJIP Layanan Sistem Automatic). How may I assist you? For service in English, press English button.'
-        #     '''
-        #     reply_data['type'] = 'button'
-        #     reply_data['header'] = 'Select Language'
-        #     reply_data['message'] = reply_message
-        #     reply_data['action'] = ['Indonesia','English']
-        # else:
-        #     reply_message, reply_data = self.process_whatsapp_reply(message, msg_vals, message_text, admin_user, session)
-        reply_message = "ISI DATA FLOW !"
-        reply_data = {
-            'type':'flow',
-            'header': '',
-            'message': reply_message,
-            'action':''
-        }
+        if message_text.lower().startswith('hello') and session.chat_state in ('greeting') :
+            reply_message = '''Thank you for contacting ELSA (EJIP Layanan Sistem Automatic). How may I assist you? For service in English, press English button.'
+            '''
+            reply_data['type'] = 'button'
+            reply_data['header'] = 'Select Language'
+            reply_data['message'] = reply_message
+            reply_data['action'] = ['Indonesia','English']
+        else:
+            reply_message, reply_data = self.process_whatsapp_reply(message, msg_vals, message_text, admin_user, session)
         self.thinq_submit_reply(admin_user, reply_message, msg_type, reply_data)
         return True
 

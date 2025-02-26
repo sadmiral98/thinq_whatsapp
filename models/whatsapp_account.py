@@ -107,7 +107,6 @@ class WhatsAppAccount(models.Model):
             else:
                 _logger.warning("Unsupported whatsapp message type: %s", messages)
                 continue
-            _logger.warning("kwargs >>> : %s", kwargs)
             channel.message_post(whatsapp_inbound_msg_uid=messages['id'], **kwargs)
 
 
