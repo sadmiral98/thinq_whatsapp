@@ -81,9 +81,9 @@ class Channel(models.Model):
                 reply_data['type'] = 'list'
                 reply_data['header'] = "Pilih Layanan"
                 reply_data['action'] = [
-                    {'id':'1','description':'Submit tiket (laporan/pengaduan)'},
-                    {'id':'2','description':'Lihat status tiket'},
-                    {'id':'3','description':'Terhubung dengan agent'}
+                    {'id':'submit','description':'Submit tiket (laporan/pengaduan)'},
+                    {'id':'ticket','description':'Lihat status tiket'},
+                    {'id':'agent','description':'Terhubung dengan agent'}
                 ]
                 session.lang = 'indo'
                 session.chat_state = 'service'
@@ -98,9 +98,9 @@ class Channel(models.Model):
                 reply_data['type'] = 'list'
                 reply_data['header'] = "Select Services"
                 reply_data['action'] = [
-                    {'id':'1','description':'Submit ticket (report/complain)'},
-                    {'id':'2','description':'Ticket status'},
-                    {'id':'3','description':'Connect with agent'}
+                    {'id':'submit','description':'Submit ticket (report/complain)'},
+                    {'id':'ticket','description':'Ticket status'},
+                    {'id':'agent','description':'Connect with agent'}
                 ]
                 session.lang = 'english'    
                 session.chat_state = 'service'
