@@ -42,24 +42,33 @@ class Channel(models.Model):
         message_text = BeautifulSoup(message_text, "html.parser").get_text() #clean html elements if exist
 
         msg_type = msg_vals.get('message_type',False)
-        _logger.warning("MESSAGE RECEIVED ==> : %s", message_text)
-
+        
+        reply_data = {
+            'type':'text',
+            'values': ''
+        }
         if message_text.lower().startswith('hello') and session.chat_state in ('greeting') :
+            reply_data['type'] = 'button'
+            reply_data['values'] = ['Indonesia','English']
             reply_message = '''Thank you for contacting ELSA (EJIP Layanan Sistem Automatic). How may I assist you? For service in English, press English button.'
             '''
         else:
-            reply_message = self.process_whatsapp_reply(message, msg_vals, message_text, admin_user, session)
+            reply_message, reply_data = self.process_whatsapp_reply(message, msg_vals, message_text, admin_user, session)
 
-        self.thinq_submit_reply(admin_user, reply_message, msg_type)
+        self.thinq_submit_reply(admin_user, reply_message, msg_type, reply_data)
         return True
 
-    def thinq_submit_reply(self, user, reply_message, message_type):
+    def thinq_submit_reply(self, user, reply_message, message_type, reply_data):
         subtype_xmlid = 'mail.mt_comment'
         reply_message = Markup(reply_message)
-        self.with_user(user).message_post(body=reply_message, message_type=message_type, subtype_xmlid=subtype_xmlid)
+        self.with_user(user).with_context(reply_data=reply_data).message_post(body=reply_message, message_type=message_type, subtype_xmlid=subtype_xmlid)
 
     def process_whatsapp_reply(self, message, msg_vals, message_text, admin_user, session):
         reply_message = 'Something wrong'
+        reply_data = {
+            'type':'text',
+            'values':'',
+        }
         if session.chat_state == 'greeting':
             if 'indonesia' in message_text.lower():
                 session.lang = 'indo'
@@ -175,4 +184,4 @@ class Channel(models.Model):
         #     'partner_phone':partner.phone,
         #     'agent_pic_uid': admin_user.id
         # })
-        return reply_message
+        return reply_message, reply_data

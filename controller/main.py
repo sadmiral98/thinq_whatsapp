@@ -169,49 +169,56 @@ def custom_prepare_error_response(self, response):
 #     })
 #     return data
 
-# def custom_process_button(self, data, send_vals, discuss_data):
-#     # R: Cutting Text to fit maximum chars allowed
-#     action = discuss_data.get('discuss_action')
-#     max_button = 3
-#     action['buttons'] = action['buttons'][:max_button] #R : Maximum button reply only 3, based on Whatsapp API Cloud
-#     for button in action['buttons']:
-#         if 'title' in button['reply']:
-#             button['reply']['title'] = button['reply']['title'][:20] #R: Maximum Chars for button title only 20
+def custom_process_button(self, data, send_vals, reply_data):
+    # R: Cutting Text to fit maximum chars allowed
+    values = reply_data.get('values')
+    body = data.get('text').get('body')
+    buttons = []
+    for val in values:
+        buttons.append({
+            'type': 'reply',
+            'reply': {
+                'id': f'reply-{val}',
+                'title': val
+            }
+        })
 
-#     data.update({
-#         'type': 'interactive',
-#         'interactive': {
-#             'type': 'button',
-#             'header': {
-#                 'type':'text',
-#                 'text': discuss_data.get('discuss_header')
-#             },
-#             'body': {
-#                 'text': discuss_data.get('discuss_message')
-#             },
-#             'action': action
-#             # 'action': {
-#                 # 'buttons': [
-#                 #     {
-#                 #     'type': 'reply',
-#                 #     'reply': {
-#                 #         'id': 'reply-yes',
-#                 #         'title': 'Yeah !'
-#                 #         }
-#                 #     },
-#                 #     {
-#                 #     'type': 'reply',
-#                 #     'reply': {
-#                 #         'id': 'reply-no',
-#                 #         'title': 'Nope ?!'
-#                 #         }
-#                 #     }
-#                 # ]
-#             # }
-#         }
-#     })
-#     return data
-def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_id=False, discuss_data={}):
+    data.update({
+        'type': 'interactive',
+        'interactive': {
+            'type': 'button',
+            'header': {
+                'type':'text',
+                'text': ''
+            },
+            'body': {
+                'text': body
+            },
+            'action': {
+                'buttons': buttons
+            }
+            # 'action': {
+                # 'buttons': [
+                #     {
+                #     'type': 'reply',
+                #     'reply': {
+                #         'id': 'reply-yes',
+                #         'title': 'Yeah !'
+                #         }
+                #     },
+                #     {
+                #     'type': 'reply',
+                #     'reply': {
+                #         'id': 'reply-no',
+                #         'title': 'Nope ?!'
+                #         }
+                #     }
+                # ]
+            # }
+        }
+    })
+    return data
+def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_id=False, reply_data={}):
     """ Send WA messages for all message type using WhatsApp Business Account
 
     API Documentation:
@@ -237,12 +244,9 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
         })
     if message_type == 'text':
         _logger.info("message ==>  %s ", message_type)
-        # if discuss_data:
-        #     _logger.info("discuss data : ")
-        #     _logger.info(discuss_data)
-        #     if discuss_data.get('discuss_type') == 'button':
-        #         # BUtton reply chat
-        #         data = self.custom_process_button(data, send_vals, discuss_data)
+        if reply_data:
+            if reply_data.get('type') == 'button':
+                data = self.custom_process_button(data, send_vals, reply_data)
 
         #     elif discuss_data.get('discuss_type') == 'list':
         #         # List reply chat
@@ -255,11 +259,11 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
         #     # Image reply chat
         #     # data = self.custom_process_image(data, send_vals)
         
-        # else: # R; if no records to button, set it as regular text reply
-        data.update({
-            'type': message_type,
-            message_type: send_vals
-        })
+        else: # R; if no records to button, set it as regular text reply
+            data.update({
+                'type': message_type,
+                message_type: send_vals
+            })
 
         _logger.info("data ==>  %s ", data)
         
@@ -284,7 +288,7 @@ WhatsAppApi.custom_prepare_error_response = custom_prepare_error_response
 # WhatsAppApi.custom_process_image = custom_process_image
 # WhatsAppApi.custom_process_document = custom_process_document
 # WhatsAppApi.custom_process_list = custom_process_list
-# WhatsAppApi.custom_process_button = custom_process_button
+WhatsAppApi.custom_process_button = custom_process_button
 WhatsAppApi._send_whatsapp = custom_send_whatsapp
 # class WebController(Webhook):
 #     @http.route()

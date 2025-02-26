@@ -115,13 +115,13 @@ class WhatsAppMessage(models.Model):
     _inherit = 'whatsapp.message'
 
     def _send(self, force_send_by_cron=False):
-        discuss_data = self.env.context.get('discuss_data',{})
+        reply_data = self.env.context.get('reply_data',{})
         if len(self) <= 1 and not force_send_by_cron:
-            self._send_message(discuss_data=discuss_data)
+            self._send_message(reply_data=reply_data)
         else:
             self.env.ref('whatsapp.ir_cron_send_whatsapp_queue')._trigger()
 
-    def _send_message(self, with_commit=False, discuss_data={}):
+    def _send_message(self, with_commit=False, reply_data={}):
         """ Prepare json data for sending messages, attachments and templates."""
         # init api
         message_to_api = {}
@@ -193,7 +193,7 @@ class WhatsAppMessage(models.Model):
                     parent_id = whatsapp_message.mail_message_id.parent_id.wa_message_ids
                     if parent_id:
                         parent_message_id = parent_id[0].msg_uid
-                msg_uid = wa_api._send_whatsapp(number=number, message_type=message_type, send_vals=send_vals, parent_message_id=parent_message_id, discuss_data=discuss_data)
+                msg_uid = wa_api._send_whatsapp(number=number, message_type=message_type, send_vals=send_vals, parent_message_id=parent_message_id, reply_data=reply_data)
             except WhatsAppError as we:
                 whatsapp_message._handle_error(whatsapp_error_code=we.error_code, error_message=we.error_message,
                                                failure_type=we.failure_type)
