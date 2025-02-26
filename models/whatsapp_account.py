@@ -56,7 +56,7 @@ class WhatsAppAccount(models.Model):
                 'subtype_xmlid': 'mail.mt_comment',
                 'parent_id': parent_id.id if parent_id else None
             }
-            _logger.warning("Unsupported whatsapp message type: %s", messages)
+            _logger.warning("Message received process >>: %s", messages)
             if message_type == 'text':
                 kwargs['body'] = plaintext2html(messages['text']['body'])
             elif message_type == 'button':
@@ -107,6 +107,7 @@ class WhatsAppAccount(models.Model):
             else:
                 _logger.warning("Unsupported whatsapp message type: %s", messages)
                 continue
+            _logger.warning("kwargs >>> : %s", kwargs)
             channel.message_post(whatsapp_inbound_msg_uid=messages['id'], **kwargs)
 
 
