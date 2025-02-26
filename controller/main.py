@@ -322,6 +322,7 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
         data=json_data
     )
     response_json = response.json()
+    _logger.info("RESPONSE WHATSAPP API >>> %s", response_json)
     if response_json.get('messages'):
         msg_uid = response_json['messages'][0]['id']
         return msg_uid
