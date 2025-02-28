@@ -233,6 +233,8 @@ class Channel(models.Model):
             reply_message = config.header_message
             reply_data['type'] = 'text'
             reply_data['message'] = reply_message
+
+            session.chat_state = 'end'
         
         return reply_message, reply_data
     
