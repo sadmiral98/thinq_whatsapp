@@ -196,9 +196,6 @@ class Channel(models.Model):
                     session.chat_state = 'customer_response'
 
                     reply_message = config.header_message
-
-                    reply_data['type'] = 'button'
-                    reply_data['message'] = reply_message
                     reply_data['message'] = reply_message
 
             else:
