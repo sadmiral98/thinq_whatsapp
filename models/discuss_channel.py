@@ -201,8 +201,8 @@ class Channel(models.Model):
                     reply_data['type'] = 'text'
                     reply_data['message'] = reply_message
             else:
-                ticket = self.env['helpdesk.ticket'].search([('name','=',message_text)])
-                # ticket = self.env['helpdesk.ticket'].search([('number','=',message_text)])
+                ticket = self.env['helpdesk.ticket'].search([('name','=',message_text)],limit=1)
+                # ticket = self.env['helpdesk.ticket'].search([('number','=',message_text)],limit=1)
                 if ticket:
                     selected_json_dict['ticket_id'] = ticket.id
                     selected_json = json.dumps(selected_json_dict)
@@ -313,9 +313,29 @@ class Channel(models.Model):
             else:
                 if message_text == 'detail-ticket':
                     ticket_id = selected_json_dict['ticket_id']
-                    ticket = self.env['helpdesk.ticket'].search([('name','=',ticket_id)])
-                    # ticket = self.env['helpdesk.ticket'].search([('number','=',message_text)])
-                    reply_message = f"Status ticket: {ticket.stage_id.name}, description = {ticket.description}"
+                    ticket = self.env['helpdesk.ticket'].browse(ticket_id)
+                    if session.lang == 'indo':
+                        reply_message = f"Status tiket: {ticket.stage_id.name}, deskripsi = {ticket.description}"
+                        actions = [{
+                            'id': "special-main-menu",
+                            'description': "Kembali ke menu awal"
+                        },
+                        {
+                            'id': "special-end",
+                            'description': "Akhiri Percakapan"
+                        }]
+                        reply_data['action'] = actions
+                    else:
+                        reply_message = f"Status ticket: {ticket.stage_id.name}, description = {ticket.description}"
+                        actions = [{
+                            'id': "special-main-menu",
+                            'description': "Back to main menu"
+                        },
+                        {
+                            'id': "special-end",
+                            'description': "End Conversation"
+                        }]
+                        reply_data['action'] = actions
                 else:
                     if session.lang == 'indo':
                         reply_message = "Maaf saya kurang mengerti"
@@ -347,8 +367,8 @@ class Channel(models.Model):
                             'description': "End Conversation"
                         }]
                         reply_data['action'] = actions
-                    reply_data['type'] = 'list'
-                    reply_data['message'] = reply_message
+                reply_data['type'] = 'list'
+                reply_data['message'] = reply_message
 
         elif session.chat_state == 'final_service':
             config = self.env['whatsapp.chatbot.config'].search([('lang','=',session.lang),('chat_state','=','customer_feedback')],limit=1)
