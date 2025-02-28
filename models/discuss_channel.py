@@ -99,8 +99,6 @@ class Channel(models.Model):
             'message': '',
             'action':''
         }
-        _logger.info("meessage VALS ||||||||||| %s", msg_vals)
-        _logger.info("meessage attachment ||||||||| %s", message_text)
         if session.chat_state == 'greeting':
             if 'indonesia' in message_text.lower():
                 reply_data['type'] = 'list'
@@ -284,45 +282,63 @@ class Channel(models.Model):
                     selected_json = json.dumps(selected_json_dict)
                     session.option_selected_json = selected_json
                     reply_message = config_media.footer_message
-                    reply_data['message'] = reply_message
-                    # if session.lang == 'indo':
-                    #     button_text = "Tidak"
-                    # else:
-                    #     button_text = "No"
+                    # reply_data['message'] = reply_message
+                    button_text = "No"
+                    if session.lang == 'indo':
+                        button_text = "Tidak"
                     
-                    # reply_data['type'] = 'button'
-                    # reply_data['header'] = reply_message
-                    # reply_data['message'] = ''
-                    # reply_data['action'] = [button_text]
+                    reply_data['type'] = 'button'
+                    reply_data['header'] = 'Send Document or Skip'
+                    reply_data['message'] = reply_message
+                    reply_data['action'] = [button_text]
                 else:
+                    ticket_type = self.env['helpdesk.ticket.type'].search([('code','=',selected_json_dict.get('service_category'))],limit=1)
+                    ticket_subject = ticket_type.name
+                    find_subject = False
+                    if session.lang == 'indo':
+                        find_subject = re.search(r'Detail keluhan:\s*(.*)', selected_json_dict['data'], re.DOTALL)
+                    else:
+                        find_subject = re.search(r'Complaint details:\s*(.*)', selected_json_dict['data'], re.DOTALL)
+
+                    if find_subject:
+                        ticket_subject = find_subject.group(1)
+
+                    partner = message.author_id
+                    ticket_type = self.env['helpdesk.ticket.type'].search([('code','=','WA')],limit=1)
+                    ticket_team = self.env['helpdesk.team'].browse(1)
+                    ticket = self.env['helpdesk.ticket'].create({
+                        # 'number':'New',
+                        'name': ticket_subject,
+                        'team_id': ticket_team.id,
+                        'user_id': admin_user.id,
+                        'ticket_type_id': ticket_type.id,
+                        'partner_id':partner.id,
+                        'partner_phone':partner.phone,
+                        'description':selected_json_dict['data']
+                        # 'agent_pic_uid': admin_user.id
+                    })
+                    session.chat_state = 'final_service'
+
+                    if msg_vals and msg_vals.get('attachment_ids') and msg_vals.get('message_type') == 'whatsapp_message':
+                        attachment_ids = []
+                        
+                        # Extract the attachment IDs
+                        for command in msg_vals['attachment_ids']:
+                            # Handle command format (4, id) which is a link command
+                            if isinstance(command, tuple) and command[0] == 4:
+                                attachment_ids.append(command[1])
+                        
+                        if attachment_ids:
+                            attachment_obj = self.env['ir.attachment']
+                            attachments = attachment_obj.browse(attachment_ids)
+                            
+                            for attachment in attachments:
+                                attachment.copy({
+                                    'res_model': 'helpdesk.ticket',
+                                    'res_id': ticket.id,
+                                })
+                                
                     if message_text.lower() in ('no','tidak'):
-                        ticket_type = self.env['helpdesk.ticket.type'].search([('code','=',selected_json_dict.get('service_category'))],limit=1)
-                        ticket_subject = ticket_type.name
-                        find_subject = False
-                        if session.lang == 'indo':
-                            find_subject = re.search(r'Detail keluhan:\s*(.*)', selected_json_dict['data'], re.DOTALL)
-                        else:
-                            find_subject = re.search(r'Complaint details:\s*(.*)', selected_json_dict['data'], re.DOTALL)
-
-                        if find_subject:
-                            ticket_subject = find_subject.group(1)
-
-                        partner = message.author_id
-                        ticket_type = self.env['helpdesk.ticket.type'].search([('code','=','WA')],limit=1)
-                        ticket_team = self.env['helpdesk.team'].browse(1)
-                        ticket = self.env['helpdesk.ticket'].create({
-                            # 'number':'New',
-                            'name': ticket_subject,
-                            'team_id': ticket_team.id,
-                            'user_id': admin_user.id,
-                            'ticket_type_id': ticket_type.id,
-                            'partner_id':partner.id,
-                            'partner_phone':partner.phone,
-                            'description':selected_json_dict['data']
-                            # 'agent_pic_uid': admin_user.id
-                        })
-                        session.chat_state = 'final_service'
-
                         reply_message = config.header_message
                         # reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
                         reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.name)
@@ -332,8 +348,6 @@ class Channel(models.Model):
 
                         reply_data['type'] = 'text'
                         reply_data['message'] = reply_message
-                    else:
-                        _logger.info("meessage attachment %s", message_text)
             else:
                 if message_text == 'detail-ticket':
                     ticket_id = selected_json_dict['ticket_id']

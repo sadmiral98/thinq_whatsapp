@@ -118,44 +118,6 @@ def custom_prepare_error_response(self, response):
 #     })
 #     return data
 
-def custom_process_flow(self, data, send_vals, reply_data):
-    data.update({
-        'type': 'interactive',
-        'interactive': {
-            'type': 'flow',
-            'header': {
-                'type': 'text',
-                'text': 'Flow message header'
-            },
-            'body': {
-                'text': 'Flow message body'
-            },
-            'footer': {
-                'text': 'Flow message footer'
-            },
-            'action': {
-                'name': 'flow',
-                'parameters': {
-                    'flow_message_version': '3',
-                    'flow_token': 'AQAAAAACS5FpgQ_cAAAAAD0QI3s.',
-                    'flow_id': '1',
-                    'flow_cta': 'Book!',
-                    'flow_action': 'navigate',
-                    'flow_action_payload': {
-                        'screen': '<SCREEN_NAME>',
-                        'data': { 
-                            'product_name': 'name',
-                            'product_description': 'description',
-                            'product_price': 100
-                        }
-                    }
-                }
-            }
-        }
-    })
-
-    return data
-
 def custom_process_list(self, data, send_vals, reply_data):
     actions = reply_data.get('action')
     header = reply_data.get('header','')
@@ -224,7 +186,6 @@ def custom_process_button(self, data, send_vals, reply_data):
                 'title': act
             }
         })
-
     data.update({
         'type': 'interactive',
         'interactive': {
@@ -259,6 +220,8 @@ def custom_process_button(self, data, send_vals, reply_data):
             # }
         }
     })
+
+    _logger.info("data buttons >>> %s", buttons)
     return data
 def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_id=False, reply_data={}):
     """ Send WA messages for all message type using WhatsApp Business Account
@@ -291,9 +254,6 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
 
             elif reply_data.get('type') == 'list':
                 data = self.custom_process_list(data, send_vals, reply_data)
-
-            elif reply_data.get('type') == 'flow':
-                data = self.custom_process_flow(data, send_vals, reply_data)
 
         #     elif discuss_data.get('discuss_type') == 'document':
         #         # document reply chat
@@ -334,7 +294,6 @@ WhatsAppApi.custom_prepare_error_response = custom_prepare_error_response
 # WhatsAppApi.get_media_id = get_media_id
 # WhatsAppApi.custom_process_image = custom_process_image
 # WhatsAppApi.custom_process_document = custom_process_document
-WhatsAppApi.custom_process_flow = custom_process_flow
 WhatsAppApi.custom_process_list = custom_process_list
 WhatsAppApi.custom_process_button = custom_process_button
 WhatsAppApi._send_whatsapp = custom_send_whatsapp
