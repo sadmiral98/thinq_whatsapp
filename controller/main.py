@@ -262,7 +262,8 @@ def custom_process_button(self, data, send_vals, reply_data):
     return data
 def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_id=False, reply_data={}):
 
-    send_vals['body'].replace("\\\\", "\\")
+    fixed_body = send_vals['body'].replace("\\\\", "\\")
+    send_vals['body'] = fixed_body
     _logger.info("send_vals ==>  %s ", send_vals)
     """ Send WA messages for all message type using WhatsApp Business Account
 
