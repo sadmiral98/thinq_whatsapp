@@ -335,16 +335,15 @@ class Channel(models.Model):
                                     'res_id': ticket.id,
                                 })
                                 
-                    if message_text.lower() in ('no','tidak'):
-                        reply_message = config.header_message
-                        # reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
-                        reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.name)
+                    reply_message = config.header_message
+                    # reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
+                    reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.name)
 
-                        reply_message += "{nl}{nl}"
-                        reply_message += config.footer_message
+                    reply_message += "{nl}{nl}"
+                    reply_message += config.footer_message
 
-                        reply_data['type'] = 'text'
-                        reply_data['message'] = reply_message
+                    reply_data['type'] = 'text'
+                    reply_data['message'] = reply_message
             else:
                 if message_text == 'detail-ticket':
                     ticket_id = selected_json_dict['ticket_id']
