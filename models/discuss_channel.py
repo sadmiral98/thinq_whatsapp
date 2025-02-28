@@ -198,8 +198,10 @@ class Channel(models.Model):
 
                     reply_message = config.header_message
 
-                    reply_data['type'] = 'text'
+                    reply_data['type'] = 'button'
                     reply_data['message'] = reply_message
+                    reply_data['message'] = reply_message
+
             else:
                 ticket = self.env['helpdesk.ticket'].search([('name','=',message_text)],limit=1)
                 # ticket = self.env['helpdesk.ticket'].search([('number','=',message_text)],limit=1)
@@ -273,43 +275,63 @@ class Channel(models.Model):
             selected_json_dict = json.loads(selected_json)
             selected_type_service = selected_json_dict.get('type_service')
             config = self.env['whatsapp.chatbot.config'].search([('lang','=',session.lang),('chat_state','=','final_service'),('chat_type','=',selected_type_service)],limit=1)
+            config_media = self.env['whatsapp.chatbot.config'].search([('lang','=',session.lang),('chat_state','=','customer_response'),('chat_type','=',selected_type_service)],limit=1)
             
             if selected_type_service == 'submit':
-                selected_json_dict['data'] = message_text
-                # selected_json = json.dumps(selected_json_dict)
-                # session.option_selected_json = selected_json
+                if 'data' not in selected_json_dict:
+                    selected_json_dict['data'] = message_text
+                    selected_json = json.dumps(selected_json_dict)
+                    session.option_selected_json = selected_json
+                    reply_message = config_media.footer_message
+                    if session.lang == 'indo':
+                        button_text = "Tidak"
+                    else:
+                        button_text = "No"
+                    
+                    reply_data['type'] = 'button'
+                    reply_data['header'] = reply_message
+                    reply_data['message'] = ''
+                    reply_data['action'] = [button_text]
+                else:
+                    if message_text.lower() in ('no','tidak'):
+                        ticket_type = self.env['helpdesk.ticket.type'].search([('code','=',selected_json_dict.get('service_category'))],limit=1)
+                        ticket_subject = ticket_type.name
+                        find_subject = False
+                        if session.lang == 'indo':
+                            find_subject = re.search(r'Detail keluhan:\s*(.*)', selected_json_dict['data'], re.DOTALL)
+                        else:
+                            find_subject = re.search(r'Complaint details:\s*(.*)', selected_json_dict['data'], re.DOTALL)
 
-                ticket_type = self.env['helpdesk.ticket.type'].search([('code','=',selected_json_dict.get('service_category'))],limit=1)
-                ticket_subject = ticket_type.name
-                find_subject = re.search(r'Detail keluhan:\s*(.*)', message_text, re.DOTALL)
-                if find_subject:
-                    ticket_subject = find_subject.group(1)
+                        if find_subject:
+                            ticket_subject = find_subject.group(1)
 
-                partner = message.author_id
-                ticket_type = self.env['helpdesk.ticket.type'].search([('code','=','WA')],limit=1)
-                ticket_team = self.env['helpdesk.team'].browse(1)
-                ticket = self.env['helpdesk.ticket'].create({
-                    # 'number':'New',
-                    'name': ticket_subject,
-                    'team_id': ticket_team.id,
-                    'user_id': admin_user.id,
-                    'ticket_type_id': ticket_type.id,
-                    'partner_id':partner.id,
-                    'partner_phone':partner.phone,
-                    'description':message_text
-                    # 'agent_pic_uid': admin_user.id
-                })
-                session.chat_state = 'final_service'
+                        partner = message.author_id
+                        ticket_type = self.env['helpdesk.ticket.type'].search([('code','=','WA')],limit=1)
+                        ticket_team = self.env['helpdesk.team'].browse(1)
+                        ticket = self.env['helpdesk.ticket'].create({
+                            # 'number':'New',
+                            'name': ticket_subject,
+                            'team_id': ticket_team.id,
+                            'user_id': admin_user.id,
+                            'ticket_type_id': ticket_type.id,
+                            'partner_id':partner.id,
+                            'partner_phone':partner.phone,
+                            'description':selected_json_dict['data']
+                            # 'agent_pic_uid': admin_user.id
+                        })
+                        session.chat_state = 'final_service'
 
-                reply_message = config.header_message
-                # reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
-                reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.name)
+                        reply_message = config.header_message
+                        # reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
+                        reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.name)
 
-                reply_message += "{nl}{nl}"
-                reply_message += config.footer_message
+                        reply_message += "{nl}{nl}"
+                        reply_message += config.footer_message
 
-                reply_data['type'] = 'text'
-                reply_data['message'] = reply_message
+                        reply_data['type'] = 'text'
+                        reply_data['message'] = reply_message
+                    else:
+                        _logger.info("meessage attachment %s", message_text)
             else:
                 if message_text == 'detail-ticket':
                     ticket_id = selected_json_dict['ticket_id']

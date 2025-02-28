@@ -28,9 +28,8 @@ Nama: {nl}
 Perusahaan: {nl}
 Dept: {nl}
 Detail keluhan:{nl}
-{nl}
-Mohon untuk kirimkan file terkait dengan informasi/keluhan (jika diperlukan)</field>
-      <field name="footer_message"></field>
+</field>
+      <field name="footer_message">Mohon untuk kirimkan file terkait dengan informasi/keluhan (jika diperlukan)</field>
     </record>
     <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_response_en_whatsapp_config_chatbot">
       <field name="chat_state">customer_response</field>
@@ -42,9 +41,8 @@ Name: {nl}
 Company: {nl}
 Dept: {nl}
 Complaint details: {nl}
-{nl}
-Please send us a file related to information/complaint (if needed)</field>
-      <field name="footer_message"></field>
+</field>
+      <field name="footer_message">Please send us a file related to information/complaint (if needed)</field>
     </record>
 
     <record model="whatsapp.chatbot.config" id="thinq_whatsapp.final_service_id_whatsapp_config_chatbot">
