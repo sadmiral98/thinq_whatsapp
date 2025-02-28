@@ -262,9 +262,11 @@ def custom_process_button(self, data, send_vals, reply_data):
     return data
 def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_id=False, reply_data={}):
 
-    fixed_body = send_vals['body'].replace("\\\\", "\\")
+    fixed_body = send_vals['body']
+    fixed_body = fixed_body.replace("\\\\", "\\")
+    _logger.info("fixed_body ==>  %s ", fixed_body)
     send_vals['body'] = fixed_body
-    _logger.info("send_vals ==>  %s ", send_vals)
+    _logger.info("send_valsbody ==>  %s ", send_vals['body'])
     """ Send WA messages for all message type using WhatsApp Business Account
 
     API Documentation:
