@@ -15,12 +15,12 @@
       <field name="chat_id">customer_response_id</field>
       <field name="lang">indo</field>
       <field name="chat_type">submit</field>
-      <field name="header_message">Silahkan melengkapi data berikut ini :
-Nama: 
-Perusahaan: 
-Dept: 
-Detail keluhan:
-
+      <field name="header_message">Silahkan melengkapi data berikut ini :{nl}
+Nama: {nl}
+Perusahaan: {nl}
+Dept: {nl}
+Detail keluhan:{nl}
+{nl}
 Mohon untuk kirimkan file terkait dengan informasi/keluhan (jika diperlukan)</field>
       <field name="footer_message"></field>
     </record>
