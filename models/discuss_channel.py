@@ -99,7 +99,8 @@ class Channel(models.Model):
             'message': '',
             'action':''
         }
-
+        _logger.info("meessage VALS ||||||||||| %s", msg_vals)
+        _logger.info("meessage attachment ||||||||| %s", message_text)
         if session.chat_state == 'greeting':
             if 'indonesia' in message_text.lower():
                 reply_data['type'] = 'list'
@@ -283,15 +284,16 @@ class Channel(models.Model):
                     selected_json = json.dumps(selected_json_dict)
                     session.option_selected_json = selected_json
                     reply_message = config_media.footer_message
-                    if session.lang == 'indo':
-                        button_text = "Tidak"
-                    else:
-                        button_text = "No"
+                    reply_data['message'] = reply_message
+                    # if session.lang == 'indo':
+                    #     button_text = "Tidak"
+                    # else:
+                    #     button_text = "No"
                     
-                    reply_data['type'] = 'button'
-                    reply_data['header'] = reply_message
-                    reply_data['message'] = ''
-                    reply_data['action'] = [button_text]
+                    # reply_data['type'] = 'button'
+                    # reply_data['header'] = reply_message
+                    # reply_data['message'] = ''
+                    # reply_data['action'] = [button_text]
                 else:
                     if message_text.lower() in ('no','tidak'):
                         ticket_type = self.env['helpdesk.ticket.type'].search([('code','=',selected_json_dict.get('service_category'))],limit=1)
