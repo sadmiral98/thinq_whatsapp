@@ -313,7 +313,7 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
                 message_type: send_vals
             })
 
-    if message_type == 'text':
+    if data['type'] == 'text':
         _logger.info("DATA BEFORE ==>  %s ", data)
         data['text']['body'] = data['text']['body'].replace("\\\\","\\")
     _logger.info("DATA SETELAH BEFORE ==>  %s ", data)
