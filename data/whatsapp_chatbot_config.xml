@@ -9,6 +9,14 @@
       <field name="header_message">Apa yang bisa kami bantu ? {customer_name}</field>
       <field name="footer_message">Mohon maaf, jika dalam waktu 30 menit tidak ada respon yang kami terima, maka percakapan ini akan kami hentikan. </field>
     </record>
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.service_selected_en_whatsapp_config_chatbot">
+      <field name="chat_state">service_selected</field>
+      <field name="chat_id">service_selected_en</field>
+      <field name="lang">english</field>
+      <field name="chat_type">submit</field>
+      <field name="header_message">How may I assist you? {customer_name}</field>
+      <field name="footer_message">If we receive no response within 30 minutes, this conversation will be automatically closed. </field>
+    </record>
 
     <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_response_id_whatsapp_config_chatbot">
       <field name="chat_state">customer_response</field>
@@ -24,14 +32,37 @@ Detail keluhan:{nl}
 Mohon untuk kirimkan file terkait dengan informasi/keluhan (jika diperlukan)</field>
       <field name="footer_message"></field>
     </record>
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_response_en_whatsapp_config_chatbot">
+      <field name="chat_state">customer_response</field>
+      <field name="chat_id">customer_response_en</field>
+      <field name="lang">english</field>
+      <field name="chat_type">submit</field>
+      <field name="header_message">Please complete the following data: {nl}
+Name: {nl}
+Company: {nl}
+Dept: {nl}
+Complaint details: {nl}
+{nl}
+Please send us a file related to information/complaint (if needed)</field>
+      <field name="footer_message"></field>
+    </record>
 
     <record model="whatsapp.chatbot.config" id="thinq_whatsapp.final_service_id_whatsapp_config_chatbot">
       <field name="chat_state">final_service</field>
       <field name="chat_id">final_service_id</field>
       <field name="lang">indo</field>
       <field name="chat_type">submit</field>
-      <field name="header_message">Nomor ticket anda adalah {ticket_id}. Selanjutnya akan kami teruskan ke tim terkait.</field>
+      <field name="header_message">Nomor ticket anda adalah *{ticket_id}*. Selanjutnya akan kami teruskan ke tim terkait.</field>
       <field name="footer_message">Apakah ada pertanyaan atau informasi tambahan yang ingin disampaikan?</field>
+    </record>
+
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.final_service_en_whatsapp_config_chatbot">
+      <field name="chat_state">final_service</field>
+      <field name="chat_id">final_service_en</field>
+      <field name="lang">english</field>
+      <field name="chat_type">submit</field>
+      <field name="header_message">Your ticket number is *{ticket_id}*. We will forward your information to our team. Please Wait.</field>
+      <field name="footer_message">Is there any further information or question you would like to tell us?</field>
     </record>
 
     <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_feedback_id_whatsapp_config_chatbot">
@@ -42,6 +73,71 @@ Mohon untuk kirimkan file terkait dengan informasi/keluhan (jika diperlukan)</fi
       <field name="header_message">Feedback anda telah kami terima, terimakasih atas feedback anda</field>
       <field name="footer_message"></field>
     </record>
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_feedback_en_whatsapp_config_chatbot">
+      <field name="chat_state">customer_feedback</field>
+      <field name="chat_id">customer_feedback_en</field>
+      <field name="lang">english</field>
+      <field name="chat_type">submit</field>
+      <field name="header_message">Thanks for your feedback!</field>
+      <field name="footer_message"></field>
+    </record>
 
+<!-- ticket default datas -->
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.service_selected_ticket_id_whatsapp_config_chatbot">
+      <field name="chat_state">service_selected</field>
+      <field name="chat_id">service_selected_ticket_id</field>
+      <field name="lang">indo</field>
+      <field name="chat_type">ticket</field>
+      <field name="header_message">Mohon tuliskan *nomor tiket* Anda{nl}{nl}
+contoh : XYZ00001
+</field>
+      <field name="footer_message"></field>
+    </record>
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.service_selected_ticket_en_whatsapp_config_chatbot">
+      <field name="chat_state">service_selected</field>
+      <field name="chat_id">service_selected_ticket_en</field>
+      <field name="lang">english</field>
+      <field name="chat_type">ticket</field>
+      <field name="header_message">Please write down your *nomor tiket*{nl}{nl}
+example : XYZ00001
+</field>
+      <field name="footer_message"></field>
+    </record>
+
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_response_ticket_id_whatsapp_config_chatbot">
+      <field name="chat_state">customer_response</field>
+      <field name="chat_id">customer_response_ticket_id</field>
+      <field name="lang">indo</field>
+      <field name="chat_type">ticket</field>
+      <field name="header_message">Status tiket anda saat ini: *{ticket_status}*{nl}{nl}
+</field>
+      <field name="footer_message"></field>
+    </record>
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_response_ticket_en_whatsapp_config_chatbot">
+      <field name="chat_state">customer_response</field>
+      <field name="chat_id">customer_response_ticket_en</field>
+      <field name="lang">english</field>
+      <field name="chat_type">ticket</field>
+      <field name="header_message">Current ticket status: *{ticket_status}*{nl}{nl}
+</field>
+      <field name="footer_message"></field>
+    </record>
+
+    <!-- <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_feedback_ticket_id_whatsapp_config_chatbot">
+      <field name="chat_state">customer_feedback</field>
+      <field name="chat_id">customer_feedback_ticket_id</field>
+      <field name="lang">indo</field>
+      <field name="chat_type">ticket</field>
+      <field name="header_message">Terima kasih telah menghubungi kami. Kami tutup percakapan ini. Semoga hari anda menyenangkan</field>
+      <field name="footer_message"></field>
+    </record>
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_feedback_ticket_en_whatsapp_config_chatbot">
+      <field name="chat_state">customer_feedback</field>
+      <field name="chat_id">customer_feedback_ticket_en</field>
+      <field name="lang">english</field>
+      <field name="chat_type">ticket</field>
+      <field name="header_message">Thank you for contacting us. We will close this conversation. Have a great day</field>
+      <field name="footer_message"></field>
+    </record> -->
   </data>
 </odoo>
