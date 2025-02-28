@@ -210,19 +210,20 @@ class Channel(models.Model):
             ticket_type = self.env['helpdesk.ticket.type'].search([('code','=','WA')],limit=1)
             ticket_team = self.env['helpdesk.team'].browse(1)
             ticket = self.env['helpdesk.ticket'].create({
-                'number':'New',
+                # 'number':'New',
                 'name': ticket_subject,
                 'team_id': ticket_team.id,
                 'user_id': admin_user.id,
                 'ticket_type_id': ticket_type.id,
                 'partner_id':partner.id,
                 'partner_phone':partner.phone,
-                'agent_pic_uid': admin_user.id
+                # 'agent_pic_uid': admin_user.id
             })
             session.chat_state = 'final_service'
 
             reply_message = config.header_message , "{nl}{nl}", config.footer_message
-            reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
+            # reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
+            reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.name)
 
             reply_data['type'] = 'text'
             reply_data['message'] = reply_message
