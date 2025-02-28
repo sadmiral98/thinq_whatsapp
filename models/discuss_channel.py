@@ -221,9 +221,12 @@ class Channel(models.Model):
             })
             session.chat_state = 'final_service'
 
-            reply_message = config.header_message , "{nl}{nl}", config.footer_message
+            reply_message = config.header_message
             # reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
             reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.name)
+
+            reply_message += "{nl}{nl}"
+            reply_message += config.footer_message
 
             reply_data['type'] = 'text'
             reply_data['message'] = reply_message
