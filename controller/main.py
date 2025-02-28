@@ -313,7 +313,8 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
                 message_type: send_vals
             })
 
-    data[message_type]['body'] = data[message_type]['body'].replace("\\\\","\\")
+    if message_type == 'text':
+        data['text']['body'] = data['text']['body'].replace("\\\\","\\")
     _logger.info("jsondata BEFORE ==>  %s ", data)
     json_data = json.dumps(data)
     _logger.info("jsondata AFTER ==>  %s ", json_data)
