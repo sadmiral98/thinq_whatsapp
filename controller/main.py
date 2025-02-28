@@ -314,8 +314,9 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
             })
 
         
+    _logger.info("jsondata BEFORE ==>  %s ", json_data)
     json_data = json.dumps(data)
-    _logger.info("jsondata ==>  %s ", json_data)
+    _logger.info("jsondata AFTER ==>  %s ", json_data)
     _logger.info("Send %s message from account %s [%s]", message_type, self.wa_account_id.name, self.wa_account_id.id)
     response = self.custom_api_request(
         "POST",

@@ -148,11 +148,9 @@ class WhatsAppMessage(models.Model):
             try:
                 parent_message_id = False
                 body = whatsapp_message.body
-                _logger.info("BODY BEFORE >>>> %s ", body)
                 if isinstance(body, markupsafe.Markup):
                     # If Body is in html format so we need to remove html tags before sending message.
                     body = body.striptags()
-                _logger.info("BODY AFTER >>>> %s ", body)
                 number = whatsapp_message.mobile_number_formatted
                 if not number:
                     raise WhatsAppError(failure_type='phone_invalid')
