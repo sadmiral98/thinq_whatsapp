@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="helpdesk.helpdesk_ticket_type_view_tree" model="ir.ui.view">
+        <field name="name">inherit.view.helpdesk.ticket.type.tree</field>
+        <field name="model">helpdesk.ticket.type</field>
+        <field name="arch" type="xml">
+            <tree string="Ticket Types" sample="1">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="sequence_id" />
+                <field name="active" widget="boolean_toggle" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="helpdesk.helpdesk_ticket_type_view_form" model="ir.ui.view">
+        <field name="name">inherit.view.helpdesk.ticket.type.form</field>
+        <field name="model">helpdesk.ticket.type</field>
+        <field name="arch" type="xml">
+            <form string="Ticket Types">
+                <group>
+                    <!-- <field name="sequence" column_invisible="True"/> -->
+                    <field name="name" placeholder="e.g. Pengaduan Maintenance &amp; Fasilitas"/>
+                    <field name="code" placeholder="e.g. MT, SO, WA, EL"/>
+                    <field name="sequence_id" />
+                    <field name="active" widget="boolean_toggle"/>
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="helpdesk.helpdesk_ticket_type_menu" model="ir.ui.menu">
+        <field name="name">Ticket Types</field>
+        <field name="groups_id" eval="[(4, ref('helpdesk.group_helpdesk_user')), (4, ref('helpdesk.group_helpdesk_manager'))]"/>
+    </record>
+    <record id="helpdesk.helpdesk_ticket_type_action" model="ir.actions.act_window">
+        <field name="name">Ticket Types</field>
+    </record>
+</odoo>

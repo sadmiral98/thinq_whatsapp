@@ -48,6 +48,7 @@ This module aims to manage :
         'security/ir.model.access.csv',
         'views/res_company.xml',
         'views/whatsapp_chatbot_config.xml',
+        'views/ticket_types_view.xml',
      ],
     'css': [],
     'js': [],
