@@ -44,8 +44,10 @@ This module aims to manage :
     'demo': [],
     'test': [],
     'data': [
+        'data/whatsapp_chatbot_config.xml',
         'security/ir.model.access.csv',
         'views/res_company.xml',
+        'views/whatsapp_chatbot_config.xml',
      ],
     'css': [],
     'js': [],

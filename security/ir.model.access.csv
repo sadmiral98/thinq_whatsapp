@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_whatsapp_chat_session,whatsapp.chat.session,model_whatsapp_chat_session,,1,1,1,1
+access_whatsapp_chatbot_config,whatsapp.chatbot.config,model_whatsapp_chatbot_config,,1,1,1,1

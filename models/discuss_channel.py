@@ -75,6 +75,7 @@ class Channel(models.Model):
             'action':''
         }
         _logger.info("MESSAGE_TEXT >>> %s", message_text)
+
         if session.chat_state == 'greeting':
             if 'indonesia' in message_text.lower():
                 reply_data['type'] = 'list'
@@ -87,12 +88,6 @@ class Channel(models.Model):
                 session.lang = 'indo'
                 session.chat_state = 'service'
                 reply_message = "Silahkan pilih 1 dari layanan yang tersedia"
-                # reply_message = '''
-                #     Silahkan Pilih Layanan : <br> \n
-                #     Ketik *1* : Submit tiket (laporan/pengaduan) <br> \n
-                #     Ketik *2* : Lihat status tiket <br> \n
-                #     Ketik *3* : Terhubung dengan agent
-                # '''
             elif 'english' in message_text.lower():
                 reply_data['type'] = 'list'
                 reply_data['header'] = "Select Services"
@@ -104,12 +99,6 @@ class Channel(models.Model):
                 session.lang = 'english'    
                 session.chat_state = 'service'
                 reply_message = "Please select 1 from available services"
-                # reply_message = '''
-                #     Please select type of service :  <br> \n
-                #     Type *1* : Submit ticket (report/complain) <br> \n
-                #     Type *2* : Ticket status <br> \n
-                #     Type *3* : Connect with agent
-                # '''
             else:
                 reply_data['type'] = 'text'
                 reply_message = "I'm sorry i don't understand, try start the message with 'hello !'"
@@ -117,6 +106,7 @@ class Channel(models.Model):
             reply_data['message'] = reply_message
 
         elif session.chat_state == 'service':
+            config = self.env['whatsapp.chatbot.config'].search([('lang','=',session.lang),('chat_state','=','service_selected')],limit=1)
             if message_text.lower().startswith(('submit', 'ticket', 'agents')):
                 selected_json = session.option_selected_json
                 selected_json_dict = json.loads(selected_json)
@@ -128,28 +118,20 @@ class Channel(models.Model):
                 if session.lang == 'indo':
                     reply_data['type'] = 'list'
                     reply_data['header'] = "Pilih Jenis Layanan"
-                    reply_data['action'] = [
-                        {'id':'1','description':'Maintenance & Infrastruktur'},
-                        {'id':'2','description':'Keamanan, Damkar & Lalu lintas'},
-                        {'id':'3','description':'Air & Limbah, RKL-RPL Rinci/Rintek'},
-                        {'id':'4','description':'Laboratorium EJIP, Analisa, LHU'},
-                        {'id':'5','description':'Administrasi, Perizinan & Training'},
-                        {'id':'6','description':'Rental Factory/Office & Conference Room'},
-                        {'id':'0','description':'Kembali ke menu utama'}
-                    ]
-                    reply_message = f"Apa yang bisa kami bantu -{message.author_id.name}- ? "
-                    # reply_message = f'''
-                    #     Apa yang bisa kami bantu -{message.author_id.name}- ?  <br> \n
-                    #     Ketik *1* : Maintenance & Infrastruktur <br> \n
-                    #     Ketik *2* : Keamanan, Damkar & Lalu lintas <br> \n
-                    #     Ketik *3* : Air & Limbah, RKL-RPL Rinci/Rintek  <br> \n
-                    #     Ketik *4* : Laboratorium EJIP, Analisa, LHU <br> \n
-                    #     Ketik *5* : Administrasi, Perizinan & Training <br> \n
-                    #     Ketik *6* : Rental Factory/Office & Conference Room  <br> \n
-                    #     Ketik *0* : Kembali ke menu utama <br> \n
-
-                    #     Mohon maaf, jika dalam waktu 30 menit tidak ada respon yang kami terima, maka percakapan ini akan kami hentikan.
-                    # '''
+                    ticket_types = self.env['helpdesk.ticket.type'].search([])
+                    actions = []
+                    for ticket_type in ticket_types:
+                        actions.append({
+                            'id': ticket_type.code,
+                            'description': ticket_type.name
+                        })
+                    actions.append({
+                        'id': "0",
+                        'description': "Kembali ke main menu"
+                    })
+                    reply_data['action'] = actions
+                    reply_message = config.header_message
+                    reply_message = self.update_reply_message(reply_message, "customer_name", message.author_id.name)
                 else:
                     reply_data['type'] = 'list'
                     reply_data['header'] = "Pilih Jenis Layanan"
@@ -162,7 +144,7 @@ class Channel(models.Model):
                         {'id':'6','description':'Rental Factory/Office & Conference Room'},
                         {'id':'0','description':'Back to main menu'},
                     ]
-                    reply_message = f"How may I assist you -{message.author_id.name}- ? "
+                    reply_message = f"How may I assist you -- ? "
                     # reply_message = f'''
                     #     How may I assist you? -{message.author_id.name}- ?  <br> \n
                     #     Type *1* : Maintenance & Infrastructure <br> \n
@@ -178,43 +160,52 @@ class Channel(models.Model):
                 reply_data['message'] = reply_message
                 session.chat_state = 'service_selected'
         elif session.chat_state == 'service_selected':
-            if message_text.startswith(('1','2','3','4','5','6','0')):
+            config = self.env['whatsapp.chatbot.config'].search([('lang','=',session.lang),('chat_state','=','customer_response')],limit=1)
+            ticket_types = self.env['helpdesk.ticket.type'].search([])
+            ticket_codes = ticket_types.mapped("code")
+            if message_text.startswith(tuple(ticket_codes)):
+            # if message_text.startswith(('1','2','3','4','5','6','0')):
                 selected_json = session.option_selected_json
                 selected_json_dict = json.loads(selected_json)
                 selected_json_dict['service_category'] = message_text[:1]
                 selected_json = json.dumps(selected_json_dict)
                 session.option_selected_json = selected_json
                 session.chat_state = 'customer_response'
-            if message_text.startswith("1"):
-                if session.lang == 'indo':
-                    reply_message = f'''
-                        Silahkan melengkapi data berikut ini :
-                    '''
-                else:
-                    reply_message = f'''
-                        Please complete the following data:
-                    '''
-                reply_data['type'] = 'flow'
-                reply_data['message'] = reply_message
-        elif session.chat_state == 'customer_response':
-            def is_valid_json(input_str):
-                try:
-                    json.loads(input_str)
-                    return True
-                except json.JSONDecodeError:
-                    return False
-            if is_valid_json(message_text):
-                message_text_json = json.loads(message_text)
-                data = message_text_json.get('data')
 
-                selected_json = session.option_selected_json
-                selected_json_dict = json.loads(selected_json)
-                selected_json_dict['data'] = data
-                selected_json = json.dumps(selected_json_dict)
-                session.option_selected_json = selected_json
-                session.chat_state = 'final_service'
-            else:
-                return "Your Input is invalid. Please follow the instruction!", reply_data
+                reply_message = config.header_message
+
+                reply_data['type'] = 'text'
+                reply_data['message'] = reply_message
+
+            # if message_text.startswith("1"):
+                # if session.lang == 'indo':
+                #     reply_message = f'''
+                #         Silahkan melengkapi data berikut ini :
+                #     '''
+                # else:
+                #     reply_message = f'''
+                #         Please complete the following data:
+                #     '''
+                # reply_data['type'] = 'text'
+                # reply_data['message'] = reply_message
+        elif session.chat_state == 'customer_response':
+            config = self.env['whatsapp.chatbot.config'].search([('lang','=',session.lang),('chat_state','=','final_service')],limit=1)
+            
+
+            selected_json = session.option_selected_json
+            selected_json_dict = json.loads(selected_json)
+            selected_json_dict['data'] = message_text
+            selected_json = json.dumps(selected_json_dict)
+            session.option_selected_json = selected_json
+            session.chat_state = 'final_service'
+
+            reply_message = config.header_message
+
+            reply_data['type'] = 'text'
+            reply_data['message'] = reply_message
+
+            session.chat_state = 'customer_feedback'
+
             
         #     if message_text == "1":
 
@@ -233,3 +224,7 @@ class Channel(models.Model):
         #     'agent_pic_uid': admin_user.id
         # })
         return reply_message, reply_data
+    
+    def update_reply_message(self, reply_message, param, value_to_replace):
+        result = reply_message.replace(f"{{{param}}}", value_to_replace)
+        return result

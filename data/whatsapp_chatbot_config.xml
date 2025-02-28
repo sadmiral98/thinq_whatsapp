@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <data noupdate="0">
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.service_selected_id_whatsapp_config_chatbot">
+      <field name="chat_state">service_selected</field>
+      <field name="chat_id">service_selected_id</field>
+      <field name="lang">indo</field>
+      <field name="chat_type">submit</field>
+      <field name="header_message">Apa yang bisa kami bantu ? {customer_name}</field>
+      <field name="footer_message">Mohon maaf, jika dalam waktu 30 menit tidak ada respon yang kami terima, maka percakapan ini akan kami hentikan. </field>
+    </record>
+
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_response_id_whatsapp_config_chatbot">
+      <field name="chat_state">customer_response</field>
+      <field name="chat_id">customer_response_id</field>
+      <field name="lang">indo</field>
+      <field name="chat_type">submit</field>
+      <field name="header_message">Silahkan melengkapi data berikut ini :
+Nama: 
+Perusahaan: 
+Dept: 
+Detail keluhan:
+
+Mohon untuk kirimkan file terkait dengan informasi/keluhan (jika diperlukan)</field>
+      <field name="footer_message"></field>
+    </record>
+
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.final_service_id_whatsapp_config_chatbot">
+      <field name="chat_state">final_service</field>
+      <field name="chat_id">final_service_id</field>
+      <field name="lang">indo</field>
+      <field name="chat_type">submit</field>
+      <field name="header_message">Nomor ticket anda adalah {ticket_id}. Selanjutnya akan kami teruskan ke tim terkait.</field>
+      <field name="footer_message">Apakah ada pertanyaan atau informasi tambahan yang ingin disampaikan?</field>
+    </record>
+
+  </data>
+</odoo>

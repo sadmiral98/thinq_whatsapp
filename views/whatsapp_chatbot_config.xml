@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="whatsapp_chatbot_config_tree" model="ir.ui.view">
+        <field name="name">whatsapp.chatbot.config.tree</field>
+        <field name="model">whatsapp.chatbot.config</field>
+        <field name="arch" type="xml">
+            <tree create="0">
+                <field name="chat_id" />
+                <!-- <field name="message" /> -->
+                <field name="lang" />
+                <!-- <field name="parent_id" /> -->
+                <field name="chat_state" />
+            </tree>
+        </field>
+    </record>
+    <record id="whatsapp_chatbot_config_view_form" model="ir.ui.view">
+        <field name="name">whatsapp.chatbot.config.view.form</field>
+        <field name="model">whatsapp.chatbot.config</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="chat_state" widget="statusbar" options="{'clickable': '0'}" clickable="False"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="chat_id" readonly="1"/>
+                            <field name="lang" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="chat_type" readonly="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="header_message" />
+                        <field name="footer_message" />
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_whatsapp_chatbot_config" model="ir.actions.act_window">
+        <field name="name">Whatsapp Chatbot Config</field>
+        <field name="res_model">whatsapp.chatbot.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            Create a new Whatsapp Chatbot
+            </p>
+        </field>
+    </record>
+    <menuitem
+        id="whatsapp_chatbot_config_menu"
+        name="Whatsapp Chatbot Config"
+        action="action_whatsapp_chatbot_config"
+        parent="whatsapp.whatsapp_configuration_menu"
+        sequence="20"/>
+</odoo>
