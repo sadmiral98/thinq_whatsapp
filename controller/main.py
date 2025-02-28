@@ -314,8 +314,9 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
             })
 
     if message_type == 'text':
+        _logger.info("DATA BEFORE ==>  %s ", data)
         data['text']['body'] = data['text']['body'].replace("\\\\","\\")
-    _logger.info("jsondata BEFORE ==>  %s ", data)
+    _logger.info("DATA SETELAH BEFORE ==>  %s ", data)
     json_data = json.dumps(data)
     _logger.info("jsondata AFTER ==>  %s ", json_data)
     _logger.info("Send %s message from account %s [%s]", message_type, self.wa_account_id.name, self.wa_account_id.id)
