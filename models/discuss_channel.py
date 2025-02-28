@@ -4,6 +4,7 @@ from markupsafe import Markup
 from datetime import datetime, timedelta
 import json
 from bs4 import BeautifulSoup
+import re
 
 import logging
 # _logger = logging.getLogger('ejip.tech-lab.space')
@@ -167,7 +168,7 @@ class Channel(models.Model):
             # if message_text.startswith(('1','2','3','4','5','6','0')):
                 selected_json = session.option_selected_json
                 selected_json_dict = json.loads(selected_json)
-                selected_json_dict['service_category'] = message_text[:1]
+                selected_json_dict['service_category'] = message_text
                 selected_json = json.dumps(selected_json_dict)
                 session.option_selected_json = selected_json
                 session.chat_state = 'customer_response'
@@ -195,34 +196,44 @@ class Channel(models.Model):
             selected_json = session.option_selected_json
             selected_json_dict = json.loads(selected_json)
             selected_json_dict['data'] = message_text
-            selected_json = json.dumps(selected_json_dict)
-            session.option_selected_json = selected_json
+            # selected_json = json.dumps(selected_json_dict)
+            # session.option_selected_json = selected_json
+
+            # {"type_service": "submit", "service_category": "A", "data": "anjay"}
+            ticket_type = self.env['helpdesk.ticket.type'].search([('code','=',selected_json_dict.get('service_category'))],limit=1)
+            ticket_subject = ticket_type.name
+            find_subject = re.search(r'Detail keluhan:\s*(.*)', message_text, re.DOTALL)
+            if find_subject:
+                ticket_subject = find_subject.group(1)
+
+            partner = message.author_id
+            ticket_type = self.env['helpdesk.ticket.type'].search([('code','=','WA')],limit=1)
+            ticket_team = self.env['helpdesk.team'].browse(1)
+            ticket = self.env['helpdesk.ticket'].create({
+                'number':'New',
+                'name': ticket_subject,
+                'team_id': ticket_team.id,
+                'user_id': admin_user.id,
+                'ticket_type_id': ticket_type.id,
+                'partner_id':partner.id,
+                'partner_phone':partner.phone,
+                'agent_pic_uid': admin_user.id
+            })
             session.chat_state = 'final_service'
 
-            reply_message = config.header_message
+            reply_message = config.header_message , "{nl}{nl}", config.footer_message
+            reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
 
             reply_data['type'] = 'text'
             reply_data['message'] = reply_message
 
-            session.chat_state = 'customer_feedback'
+        elif session.chat_state == 'final_service':
+            config = self.env['whatsapp.chatbot.config'].search([('lang','=',session.lang),('chat_state','=','customer_feedback')],limit=1)
 
-            
-        #     if message_text == "1":
-
-        # ticket_subject = message_text[len('ct: '):].strip()  
-        # partner = message.author_id
-        # ticket_type = self.env['helpdesk.ticket.type'].search([('code','=','WA')],limit=1)
-        # ticket_team = self.env['helpdesk.team'].browse(1)
-        # ticket = self.env['helpdesk.ticket'].create({
-        #     'number':'New',
-        #     'name': ticket_subject,
-        #     'team_id': ticket_team.id,
-        #     'user_id': admin_user.id,
-        #     'ticket_type_id': ticket_type.id,
-        #     'partner_id':partner.id,
-        #     'partner_phone':partner.phone,
-        #     'agent_pic_uid': admin_user.id
-        # })
+            reply_message = config.header_message
+            reply_data['type'] = 'text'
+            reply_data['message'] = reply_message
+        
         return reply_message, reply_data
     
     def update_reply_message(self, reply_message, param, value_to_replace):

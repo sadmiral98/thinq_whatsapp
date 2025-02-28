@@ -34,5 +34,14 @@ Mohon untuk kirimkan file terkait dengan informasi/keluhan (jika diperlukan)</fi
       <field name="footer_message">Apakah ada pertanyaan atau informasi tambahan yang ingin disampaikan?</field>
     </record>
 
+    <record model="whatsapp.chatbot.config" id="thinq_whatsapp.customer_feedback_id_whatsapp_config_chatbot">
+      <field name="chat_state">customer_feedback</field>
+      <field name="chat_id">customer_feedback_id</field>
+      <field name="lang">indo</field>
+      <field name="chat_type">submit</field>
+      <field name="header_message">Feedback anda telah kami terima, terimakasih atas feedback anda</field>
+      <field name="footer_message"></field>
+    </record>
+
   </data>
 </odoo>
