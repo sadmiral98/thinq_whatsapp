@@ -92,7 +92,7 @@ class Channel(models.Model):
         self.with_user(user).with_context(reply_data=reply_data).message_post(body=reply_message, message_type=message_type, subtype_xmlid=subtype_xmlid)
 
         second_actions = reply_data.get('second_action',False)
-
+        _logger.info("second_actions >>> %s", second_actions)
         if second_actions:
             for action in second_actions:
                 self.with_user(user).with_context(reply_data=action).message_post(body='', message_type=message_type, subtype_xmlid=subtype_xmlid)
