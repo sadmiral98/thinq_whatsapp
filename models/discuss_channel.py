@@ -91,6 +91,13 @@ class Channel(models.Model):
         reply_message = Markup(reply_message)
         self.with_user(user).with_context(reply_data=reply_data).message_post(body=reply_message, message_type=message_type, subtype_xmlid=subtype_xmlid)
 
+        second_actions = reply_data.get('second_action',False)
+
+        if second_actions:
+            for action in second_actions:
+                self.with_user(user).with_context(reply_data=action).message_post(body='', message_type=message_type, subtype_xmlid=subtype_xmlid)
+
+
     def process_whatsapp_reply(self, message, msg_vals, message_text, admin_user, session):
         reply_message = 'Something wrong'
         reply_data = {
@@ -348,6 +355,10 @@ class Channel(models.Model):
                 if message_text == 'detail-ticket':
                     ticket_id = selected_json_dict['ticket_id']
                     ticket = self.env['helpdesk.ticket'].browse(ticket_id)
+                    attachments = self.env['ir.attachment'].search([
+                        ('res_model','=','helpdesk.ticket'),
+                        ('res_id','=',ticket.id)
+                    ])
                     if session.lang == 'indo':
                         reply_message = f"Status tiket: {ticket.stage_id.name}, deskripsi = {ticket.description}"
                         actions = [{
@@ -370,6 +381,13 @@ class Channel(models.Model):
                             'description': "End Conversation"
                         }]
                         reply_data['action'] = actions
+
+                    reply_data['second_action'] = []
+                    for att in attachments:
+                        reply_data['second_action'].append({
+                            'type':'media',
+                            'media': att.id
+                        })
                 else:
                     if session.lang == 'indo':
                         reply_message = "Maaf saya kurang mengerti"

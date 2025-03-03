@@ -101,22 +101,23 @@ def custom_prepare_error_response(self, response):
 #     })
 #     return data
 
-# def custom_process_document(self, data, send_vals, discuss_data):
-#     attachment_id = discuss_data.get('discuss_attachment')
-#     attachment = self.wa_account_id.env['ir.attachment'].sudo().browse(int(attachment_id))
-#     file_content = base64.b64decode(attachment.datas)
-#     file_name = attachment.name
-#     mimetype = attachment.mimetype
-#     media_id = self.get_media_id(file_content, file_name, mimetype)
-#     data.update({
-#         'type': 'document',
-#         'document': {
-#             'id' : media_id,
-#             'caption': send_vals.get('body'),
-#             'filename': f'{file_name}.pdf'
-#         }
-#     })
-#     return data
+def custom_process_media(self, data, send_vals, reply_data):
+    attachment_id = reply_data.get('media')
+    attachment = self.wa_account_id.env['ir.attachment'].sudo().browse(int(attachment_id))
+    file_content = base64.b64decode(attachment.datas)
+    file_name = attachment.name
+    mimetype = attachment.mimetype
+    media_id = self.get_media_id(file_content, file_name, mimetype)
+    data.update({
+        'type': 'document',
+        'document': {
+            'id' : media_id,
+            'caption': send_vals.get('body'),
+            'filename': file_name
+            # 'filename': f'{file_name}.pdf'
+        }
+    })
+    return data
 
 def custom_process_list(self, data, send_vals, reply_data):
     actions = reply_data.get('action')
@@ -255,6 +256,9 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
             elif reply_data.get('type') == 'list':
                 data = self.custom_process_list(data, send_vals, reply_data)
 
+            elif reply_data.get('type') == 'media':
+                data = self.custom_process_media(data, send_vals, reply_data)
+
         #     elif discuss_data.get('discuss_type') == 'document':
         #         # document reply chat
         #         data = self.custom_process_document(data, send_vals, discuss_data)
@@ -293,7 +297,7 @@ WhatsAppApi.custom_api_request = custom_api_request
 WhatsAppApi.custom_prepare_error_response = custom_prepare_error_response
 # WhatsAppApi.get_media_id = get_media_id
 # WhatsAppApi.custom_process_image = custom_process_image
-# WhatsAppApi.custom_process_document = custom_process_document
+WhatsAppApi.custom_process_media = custom_process_media
 WhatsAppApi.custom_process_list = custom_process_list
 WhatsAppApi.custom_process_button = custom_process_button
 WhatsAppApi._send_whatsapp = custom_send_whatsapp
