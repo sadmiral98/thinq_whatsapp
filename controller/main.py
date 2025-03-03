@@ -68,23 +68,23 @@ def custom_prepare_error_response(self, response):
         return (desc if desc else _("{error_code} - Non-descript Error", code), code)
     return (_("Something went wrong when contacting WhatsApp, please try again later. If this happens frequently, contact support."), -1)
 
-# def get_media_id(self, file_content, file_name, mimetype):
-#     files = {
-#         'file': (file_name, file_content, mimetype),
-#         'type': (None, mimetype),                    # Non-file field
-#         'messaging_product': (None, 'whatsapp')
-#     }
-#     url = f"{DEFAULT_ENDPOINT}/{self.phone_uid}/media"
-#     headers={
-#         # 'Content-Type': 'application/json',
-#         'Authorization': f'Bearer {self.token}'
-#     }
-#     response = requests.post(url, headers=headers, files=files)
+def get_media_id(self, file_content, file_name, mimetype):
+    files = {
+        'file': (file_name, file_content, mimetype),
+        'type': (None, mimetype),                    # Non-file field
+        'messaging_product': (None, 'whatsapp')
+    }
+    url = f"{DEFAULT_ENDPOINT}/{self.phone_uid}/media"
+    headers={
+        # 'Content-Type': 'application/json',
+        'Authorization': f'Bearer {self.token}'
+    }
+    response = requests.post(url, headers=headers, files=files)
 
-#     if response.status_code == 200:
-#         media_id = response.json().get('id')
-#         return media_id
-#     return media_id
+    if response.status_code == 200:
+        media_id = response.json().get('id')
+        return media_id
+    return media_id
 
 # def custom_process_image(self, data, send_vals):
 #     attachment = self.wa_account_id.env['ir.attachment'].sudo().browse(1341)
@@ -294,7 +294,7 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
 
 WhatsAppApi.custom_api_request = custom_api_request
 WhatsAppApi.custom_prepare_error_response = custom_prepare_error_response
-# WhatsAppApi.get_media_id = get_media_id
+WhatsAppApi.get_media_id = get_media_id
 # WhatsAppApi.custom_process_image = custom_process_image
 WhatsAppApi.custom_process_media = custom_process_media
 WhatsAppApi.custom_process_list = custom_process_list
