@@ -11,7 +11,7 @@ from odoo.addons.whatsapp.tools.whatsapp_exception import WhatsAppError
 from odoo.tools import groupby, plaintext2html
 from odoo.exceptions import ValidationError, UserError
 
-_logger = logging.getLogger('dke.iziapp.id')
+_logger = logging.getLogger('ejip.tech-lab.space')
 
 
 class WhatsAppAccount(models.Model):

@@ -13,6 +13,7 @@ class WhatsappChatBotConfig(models.Model):
         ('indo', 'Indonesia'),
         ('english', 'English'),
     ], string='Language')
+    # Notes : (A) -> Submit Tiket. (B) -> Informasi Tiket
     chat_state = fields.Selection([
         ('greeting', 'Greeting'), # Pilih Bahasa
         ('service', 'Service'), # Pilih Layanan

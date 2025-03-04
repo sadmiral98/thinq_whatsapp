@@ -86,21 +86,6 @@ def get_media_id(self, file_content, file_name, mimetype):
         return media_id
     return media_id
 
-# def custom_process_image(self, data, send_vals):
-#     attachment = self.wa_account_id.env['ir.attachment'].sudo().browse(1341)
-#     file_content = base64.b64decode(attachment.datas)
-#     file_name = attachment.name
-#     mimetype = attachment.mimetype
-#     media_id = self.get_media_id(file_content, file_name, mimetype)
-#     data.update({
-#         'type': 'image',
-#         'image': {
-#             'id' : media_id,
-#             'caption': send_vals.get('body'),
-#         }
-#     })
-#     return data
-
 def custom_process_media(self, data, send_vals, reply_data):
     _logger.info("reply_data >>> %s", reply_data)
     attachment_id = reply_data.get('media')
@@ -258,13 +243,6 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
             elif reply_data.get('type') == 'media':
                 data = self.custom_process_media(data, send_vals, reply_data)
 
-        #     elif discuss_data.get('discuss_type') == 'document':
-        #         # document reply chat
-        #         data = self.custom_process_document(data, send_vals, discuss_data)
-
-        #     # Image reply chat
-        #     # data = self.custom_process_image(data, send_vals)
-        
             else: # R; if no records to button, set it as regular text reply
                 data.update({
                     'type': message_type,
@@ -295,7 +273,6 @@ def custom_send_whatsapp(self, number, message_type, send_vals, parent_message_i
 WhatsAppApi.custom_api_request = custom_api_request
 WhatsAppApi.custom_prepare_error_response = custom_prepare_error_response
 WhatsAppApi.get_media_id = get_media_id
-# WhatsAppApi.custom_process_image = custom_process_image
 WhatsAppApi.custom_process_media = custom_process_media
 WhatsAppApi.custom_process_list = custom_process_list
 WhatsAppApi.custom_process_button = custom_process_button

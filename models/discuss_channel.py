@@ -7,8 +7,7 @@ from bs4 import BeautifulSoup
 import re
 
 import logging
-# _logger = logging.getLogger('ejip.tech-lab.space')
-_logger = logging.getLogger('dke.iziapp.id')
+_logger = logging.getLogger('ejip.tech-lab.space')
 
 class Channel(models.Model):
     _inherit = 'discuss.channel'
@@ -206,8 +205,8 @@ class Channel(models.Model):
                     reply_data['message'] = reply_message
 
             else:
-                ticket = self.env['helpdesk.ticket'].search([('name','=',message_text)],limit=1)
-                # ticket = self.env['helpdesk.ticket'].search([('number','=',message_text)],limit=1)
+                # ticket = self.env['helpdesk.ticket'].search([('name','=',message_text)],limit=1)
+                ticket = self.env['helpdesk.ticket'].search([('number','=',message_text)],limit=1)
                 if ticket:
                     selected_json_dict['ticket_id'] = ticket.id
                     selected_json = json.dumps(selected_json_dict)
@@ -215,6 +214,7 @@ class Channel(models.Model):
                     session.chat_state = 'customer_response'
 
                     reply_message = config.header_message
+                    reply_message = self.update_reply_message(reply_message, "ticket_status", ticket.stage_id.name)
                     reply_data['message'] = reply_message
 
                     reply_data['type'] = 'list'
@@ -286,7 +286,6 @@ class Channel(models.Model):
                     selected_json = json.dumps(selected_json_dict)
                     session.option_selected_json = selected_json
                     reply_message = config_media.footer_message
-                    # reply_data['message'] = reply_message
                     button_text = "No"
                     if session.lang == 'indo':
                         button_text = "Tidak"
@@ -308,18 +307,18 @@ class Channel(models.Model):
                         ticket_subject = find_subject.group(1)
 
                     partner = message.author_id
-                    ticket_type = self.env['helpdesk.ticket.type'].search([('code','=','WA')],limit=1)
+                    # ticket_type = self.env['helpdesk.ticket.type'].search([('code','=','WA')],limit=1)
                     ticket_team = self.env['helpdesk.team'].browse(1)
                     ticket = self.env['helpdesk.ticket'].create({
-                        # 'number':'New',
+                        'number':'New',
                         'name': ticket_subject,
                         'team_id': ticket_team.id,
                         'user_id': admin_user.id,
                         'ticket_type_id': ticket_type.id,
                         'partner_id':partner.id,
                         'partner_phone':partner.phone,
-                        'description':selected_json_dict['data']
-                        # 'agent_pic_uid': admin_user.id
+                        'description':selected_json_dict['data'],
+                        'agent_pic_uid': admin_user.id
                     })
                     session.chat_state = 'final_service'
 
@@ -343,8 +342,8 @@ class Channel(models.Model):
                                 })
                                 
                     reply_message = config.header_message
-                    # reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
-                    reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.name)
+                    reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.number)
+                    # reply_message = self.update_reply_message(reply_message, "ticket_id", ticket.name)
 
                     reply_message += "{nl}{nl}"
                     reply_message += config.footer_message
